@@ -1,0 +1,30 @@
+Ducas Pulles 2023
+
+Si l'on veut distinguer un tirage BDD d'un tirage uniforme, un problème que l'on va rencontrer est le suivant. La loi uniforme va recouvrir l'intervalle, et si l'on ne tire qu'un seul tirage BDD contre un grand nombre de tirage INDEPENDANTS uniformes, alors l'un de ces tirages finira fatalement par être plus proche du réseau que le tirage BDD. 
+
+Une question : lors de l'attaque duale, les tirages uniformes concernent les mauvais guess's. Ils ne sont pas indépendants: on observe
+U_k = A_0 s_0 + A_1 (s_1 - s_guess_k) + e 
+contre 
+BDD = A_0 s_0 + e
+
+Pouly Shen 2024
+
+Utilisation d'intervalles de confiances exacts via l'inégalité de Hoeffding pour le distingueur au lieu d'un intervalle asymptotique donné par le TCL (et une approximation gaussienne)
+
+Idées:
+
+(1) Test d'indépendance du chi 2 sur des samples de cos(2 * pi * < w , t >) lorsque t suit une distribution uniform(ZZ_q) ou une A * s + e avec s et e des gaussiennes 
+ 
+(2) Marche aléatoire pour sampling sur W et théorème limite associé pour intervalle de confiance (Azuma = Hoeffding pour les martingales) 
+ 
+(3) Autre fonction de score: la fonction somme des cos(2 * pi * <w,t> ) est une approximation de la transformée de Fourier d'une mesure de probabilité symétrique sur le dual
+
+(4) Utiliser G6K pour le sampling
+
+Remarques   
+
+(1) Ducas a fait des experimentations numériques en faisant du sieving avec G6K. Il affirme que les targets As + e, qui devraient etre des gaussiennes, n'en ont pas l'air (a voir probleme dejà connu dans les codes cf 6.1 Waterfall phenomenon
+
+(2) Regarder ce que donnent des bases BKZ du dual qui seraient moins bonnes (generer les vecteurs de depart "un peu comme on veut")
+
+(3) Exhiber un cas particulier qui ne se passe pas correctement (comme dans Ducas-Pulles) pour le corriger

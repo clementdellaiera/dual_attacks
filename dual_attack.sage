@@ -6,7 +6,7 @@ from sage.all_cmdline import *
 import time
 
 import numpy as np
-from numpy.random import normal, uniform
+from numpy.random import normal, uniform, binomial
 
 from matplotlib import pyplot as plt
 
@@ -130,15 +130,32 @@ def Sample_Dual_hypercube(B,k,T):
 	B_k = B[ 0:k ]
 	sample = []
 	for v in hypercube(T//2,k) :
-			sample.append( vector(ZZ ,v ) * Bv_k )
+			sample.append( vector(ZZ ,v ) * B_k )
+	return(sample)
+
+def Sample_Dual_random_walk(B,k,T,R):
+	m , n = B.nrows() , B.ncols()
+	w = vector(ZZ, np.zeros(n))
+	sample = [w]
+	i , j = 0 , 0
+	while (i < T) and ( j < 1000 * T ):
+		j += 1
+		t , b = randint(0, k-1) , ZZ( 2*binomial(1,0.5)- 1)
+		w_succ = w + b * vector(ZZ, B[t])
+		if (w_succ.norm() < R**2):
+			sample.append( w_succ )
+			w = w_succ 
+			i += 1
 	return(sample)
 
 def Sample_AR_Distinguisher(target , Bv , W , k ):
+	# Inputs : 
 	# target list of target vectors in RR**n , Bv in RR**(n,n) , W list of dual vectors , 
 	# k int number of vectors in Bv, T int number of experiments  
-	# Returns a sample of size T of the AR-statistic sum cos(2 * pi * < w , t>))
+	# Returns : sample of size T of the AR-statistic sum cos(2 * pi * < w , t>))
 	# with w sampled as x * Bv_k where Bv_k is the k first vectors of the dual basis Bv
-	# and x ranges in hypercube of dimension k and size a/2 
+	# and x ranges in hypercube of dimension k and size a/2 i.e.
+	# [ (1 / W ) * sum_{w in W} cos( 2 * pi * < w , t > ) ]_{t in target} 
 	Bv_k = Bv[0:k]
 	X = []
 	for t in target:
@@ -147,191 +164,5 @@ def Sample_AR_Distinguisher(target , Bv , W , k ):
 			cos.append( np.cos( 2 * np.pi * w.inner_product(vector(RR, t)) ) )
 		X.append(np.mean(cos))
 	return(X)
-			
-##############	
-##   TEST   ##
-##############
-
-start_time = time.time()
-total_time = 0
-
-mm = 10			# rank of lattice
-kk = 5				# k first vectors in BKZ reduction of dual basis
-aa = 5				# Size of hypercube
-BB = random_matrix(ZZ,mm) 	# Basis of lattice
-
-m , n = BB.nrows(), BB.ncols()
-
-total_time = time.time() - start_time
-start_time = time.time()
-
-D , Bv, Lv = Dual(BB)
-Bv_BKZ = Bv.BKZ()
-Bv_k = Bv_BKZ[ 0:kk ]
-
-BKZ_time =  time.time() - start_time
-total_time += BKZ_time
-start_time = time.time()
-
-WW = Sample_Dual_hypercube(Bv_BKZ,kk,aa)
-
-WW_time =  time.time() - start_time
-total_time += WW_time
-start_time = time.time()
-
-D = DiscreteGaussianDistributionLatticeSampler(BB, 0.01) # Sampler discrete gaussian on lattice
-sigma = 0.00000000001  					 # Variance of real gaussian used for error in LWE distribution  
-
-print("** START **")
-print(" ")
-print("Random lattice of rank "+str(mm))
-print("BKZ reduction of dual basis, keeping "+str(kk)+" short vectors")
-print("Generating "+str(len(WW))+" short vectors in dual lattice in W")
-print("W : image of [-"+str(aa//2)+" , "+str(aa//2)+"]^"+str(kk)+ " by Bv[1:"+str(kk) +"]")
-
-# Profile of dual basis
-size = []
-for i in range(mm):
-	size.append(Bv_BKZ[i].norm())
-plt.plot(np.linspace(1,mm,mm) ,size)
-plt.title("Profile of reduced dual basis")
-plt.ylabel("Norm")
-plt.xlabel("Ordered set of vectors")
-plt.show()	
-
-# EXPERIMENT 1   
-# On a sample of T iid targets, compute the CDF of the AR-statistics (W-mean of of cos(2 * pi * <w,t>) ) and draws the CDF's. One sample is draw according to the LWE distribution, the second one according to the image of the uniform on hypercube by B (= basis)  
-# For each step, we sample t_lwe = s + e and t_unif = u * B 
-# where s, e , u  = gaussian(B, 10000), Normal(0,sigma) , uniform( [0,1]**m * B)
-# and evaluate the AR statistics on the set W of short dual vectors
-# given by the image of the k-th hypercube by the BKZ reduction of B
-
-T = 50
-target_lwe = []
-target_unif = []
-
-total_time += time.time() - start_time
-start_time = time.time()
-
-for i in range(T):
-	ee = vector(RR, normal(0,sigma,m)) * BB #vector(RR, uniform(0,,m))
-	target_lwe.append( D()+ee ) 
-	target_unif.append(vector(RR, uniform(0,1,mm)) * BB) 
-		
-data_lwe , data_unif = Sample_AR_Distinguisher(target_lwe , Bv_BKZ , WW , kk) , Sample_AR_Distinguisher(target_unif , Bv_BKZ , WW , kk)
-
-EXP1_time =  time.time() - start_time
-total_time += EXP1_time
-start_time = time.time()
-
-
-data_lwe.sort() , data_unif.sort()
-L1 , L2 = len(data_lwe) , len(data_unif)
-plt.plot(data_lwe, (1/L1) * np.linspace(0,1,L1) , color = "blue", label="LWE",drawstyle="steps")
-plt.plot(data_unif, (1/L2) * np.linspace(0,1,L2) , color = "cyan",label="Uniform", drawstyle="steps")
-plt.title("Empirical cumulative distribution for AR-distinguisher")
-plt.xlabel("LWE vs uniform")
-plt.legend()
-
-plt.show()
-
-total_time += time.time() - start_time
-start_time = time.time()
 	
-# EXPERIMENT 2 : 
-# CDF of the sample (cos(2 * pi * <w,t> ))_{w in W} for different distribution of t
-# t_lwe = s + e , where s is sampled on lattice, e is a centered gaussian of variance sigma
-# t_unif = uniform on fundamental domain [0,1]**m * B
-ss = D() 				# gaussian vector in lattice 
-ee = vector(RR, uniform(0,sigma,n)) 	# vector(RR, normal(0,sigma,n)) * BB# gaussian in RR**n
-uu = vector(RR, uniform(0,1,mm)) * BB	# uniform random vector in fundamental domain
 
-success_lwe , success_unif = 0 , 0
-cos_lwe, cos_unif = [] , []
-
-for ww in WW :
-	if (ww.inner_product(ss) in ZZ):
-		success_lwe += 1
-	if (ww.inner_product(uu) in ZZ):
-		success_unif += 1 
-	cos_lwe.append( np.cos( 2 * np.pi * ww.inner_product(ss+ee))) # + ee)))
-	cos_unif.append( np.cos( 2 * np.pi * ww.inner_product(uu) ) )
-
-print("Test <w,s> in ZZ for w in W for s LWE / uniform : "+str(round(100 * success_lwe / len(WW),2) ) + " % / "+str(round(100 * success_unif / len(WW) , 2))  +" %")
-print("Mean  of cos(2 * pi * < w , s > ) when s is LWE / uniform : "+str(np.mean(cos_lwe)) + " / " + str(np.mean(cos_unif)) )
-
-EXP2_time =  time.time() - start_time
-total_time += EXP2_time
-start_time = time.time()
-
-cos_lwe.sort() , cos_unif.sort()
-plt.plot(cos_lwe, (1/len(WW)) * np.linspace(0,1,len(WW)) , color = "blue",label="LWE")
-plt.plot(cos_unif, (1/len(WW)) * np.linspace(0,1,len(WW)) , color = "cyan",label="Uniform")
-plt.title("Empirical cumulative distribution function of cos(2 * pi * < w , s >) for w in W")
-plt.legend()
-plt.xlabel("LWE vs uniform")
-plt.show()
-		
-#print("DISTINGUISHER test")
-
-# Experiment 3 : 
-# For each step, we sample t_lwe = s + e and t_unif = u * B 
-# where s, e , u  = gaussian(B, 10000), Normal(0,sigma) , uniform( [0,1]**m * B)
-# and evaluate the AR statistics on the set W of short dual vectors
-# given by the image of the k-th hypercube by the BKZ reduction of B
-
-#T = 100
-#X_lwe  , X_unif = [] , []
-#for i in range(T):
-#	#tt, tt_uniform = LWE_sample(BB,10000,0.1) , random_target_sample(BB)
-#	tt, tt_uniform = vector(RR, ss + normal(0 , sigma , n )) , random_target_sample(BB)
-#	X_lwe.append(Distinguisher_Sieve_preprocessing(Bv_k , WW , tt, kk))
-#	X_unif.append(Distinguisher_Sieve_preprocessing(Bv_k , WW , tt_uniform, kk)) 
-#X_lwe.sort()
-#X_unif.sort()
-
-#y = (1/T)*np.linspace(0,1,T)
-
-#plt.plot(X_lwe,y,color="blue",label="LWE")
-#plt.plot(X_unif,y,color="black",label="Random target")
-
-#plt.title("Distinguisher for LWE and random sampling")
-#plt.xlabel("Empirical cumulative distribution functions")
-#plt.legend()
-#plt.show()
-total_time += time.time() - start_time
-print(" ")
-print("** EXECUTION TIME **")
-print(" ")
-print("BKZ reduction :              "+str(BKZ_time)+" s ")
-print("Short dual vector sampling : "+str(WW_time)+" s ")
-print("Short dual vector sampling : "+str(BKZ_time)+" s ")
-print("Experiment 1 :               "+str(EXP1_time)+" s ")
-print("Experiment 2 :               "+str(EXP2_time)+" s ")
-print("TOTAL :                      "+str(total_time)+" s ")
-print(" ")
-print("** END **")
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
