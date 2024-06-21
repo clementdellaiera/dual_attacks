@@ -73,10 +73,12 @@ figure, axis = plt.subplots(_sage_const_2 )
 axis[_sage_const_0 ].plot(data_lwe , yy , color = "blue", label="LWE" )
 axis[_sage_const_0 ].plot(data_unif, yy , color = "cyan", label="Uniform" )
 axis[_sage_const_0 ].set_title("Empirical c.d.f. of < w , t > for w in W")
-hh = len(data_lwe) //_sage_const_100 
+
 #sns.lineplot(x = np.array(data_lwe) , y=np.array(yy) , ax = axis[0])
-sns.displot(np.array(data_lwe), bins = hh , ax = axis[_sage_const_1 ] , color="blue")
-sns.displot(np.array(data_unif), bins = hh , ax = axis[_sage_const_1 ] , color = "cyan")
+histogrammes , axis_2 = plt.subplots(_sage_const_2 ) 
+hh = len(data_lwe) //_sage_const_100 
+sns.displot(np.array(data_lwe), bins = hh , ax = axis_2[_sage_const_0 ] , color="blue")
+sns.displot(np.array(data_unif), bins = hh , ax = axis_2[_sage_const_1 ] , color = "cyan")
 
 #axis[1].scatter(0*data_lwe , data_lwe , s = 1, marker='o', color = "blue")
 #axis[1].scatter(0*data_unif, data_unif , s = 1, marker='o', color = "cyan")
