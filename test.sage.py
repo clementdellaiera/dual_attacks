@@ -4,7 +4,7 @@
 from sage.all_cmdline import *   # import sage library
 
 _sage_const_10 = Integer(10); _sage_const_37 = Integer(37); _sage_const_1 = Integer(1); _sage_const_20 = Integer(20); _sage_const_100 = Integer(100); _sage_const_0 = Integer(0); _sage_const_0p1 = RealNumber('0.1'); _sage_const_4 = Integer(4); _sage_const_200 = Integer(200); _sage_const_2 = Integer(2); _sage_const_0p00000001 = RealNumber('0.00000001')
-load("dual_attack.sage")
+load("Distinguisher/dual_attack.sage")
 
 ################
 ##   BASICS   ##

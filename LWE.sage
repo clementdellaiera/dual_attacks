@@ -1,4 +1,4 @@
-load('dual_attack.sage')
+load('Distinguisher/dual_attack.sage')
 
 def character(w,t):
 	# Given w in dual lattice and t in vector space 
@@ -12,12 +12,7 @@ q , n , s = 37 , 50 , 3  # 32768 , 600 , 3
 A = random_matrix( Zmod(q) , n)
 
 # Lattices basis
-
-B = matrix(ZZ , 2*n , 2*n )
-B[0:n , 0:n] , B[ n:2*n , 0:n] , B[n:2*n , n:2*n]= matrix.identity(ZZ , n) , A.lift().transpose() , q * matrix.identity(ZZ , n)
-"""B =  [ I_n  ,    A  ]
-	[  0   , q I_n ] 
-	basis of L_A """
+B = block_matrix([ [ matrix.identity(ZZ,n) , A.lift()], [matrix.zero(ZZ,n) , q * matrix.identity(ZZ , n)]]) 
 
 Gauss_L_A = DiscreteGaussianDistributionLatticeSampler(B.BKZ(), s)
 

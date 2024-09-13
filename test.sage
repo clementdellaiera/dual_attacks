@@ -1,4 +1,4 @@
-load("dual_attack.sage")
+load("Distinguisher/dual_attack.sage")
 
 ################
 ##   BASICS   ##
