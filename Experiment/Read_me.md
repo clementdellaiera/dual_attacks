@@ -1,8 +1,8 @@
 # Scripts
 
 Parameters.sage
-	* No input
-	* Declaration of variables
+	No input
+	Declaration of variables
 		rank , modulus 	: int , int 	| dimension of lattice , modulus of LWE instances
 		log_covolume 	: int		| in the case of a LWE lattice, this is k = n-m 
 		is_LWE 		: bool		| True if lattice is qary
