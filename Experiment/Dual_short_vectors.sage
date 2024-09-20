@@ -3,7 +3,7 @@ from fpylll.util import gaussian_heuristic
 from g6k import Siever 
 
 ##   Load lattice basis 
-[ is_LWE , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE.sobj')
+[ is_LWE , stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE.sobj')
 
 ## Basis of dual/perpendicular lattice
 if is_LWE :
