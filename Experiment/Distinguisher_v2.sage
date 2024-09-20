@@ -1,12 +1,14 @@
 import numpy as np
 
+load('Parameters.sage')
 modulus , short_vector_list = load('Dual_short_vectors/dual_short_vectors')
 target_list_LWE , target_list_unif = load('Target_samples/target_samples')
 
 W_len , T_len = len(short_vector_list) , min(len(target_list_LWE) , len(target_list_unif))
 
 W_tuple = ()
-rank = 30
+
+
 for w in short_vector_list :
 	W_tuple += w
 
