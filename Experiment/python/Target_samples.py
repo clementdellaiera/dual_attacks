@@ -18,14 +18,14 @@ if is_LWE :
 	# print(A)
 	for i in range(1):
 		# s , e = random_matrix(R , 1 , rank ) , random_matrix(R , rank , 1 )
-		s = np.array([np.random.randint(modulus-1) for _ in range(rank)])
+		s = np.array([np.random.randint(modulus) for _ in range(rank)])
 		_BB = [[0 for _ in range(rank)] for _ in range(rank)]
 		_ = A.to_matrix(_BB)
 		BB = np.array(_BB)
 		v = np.matmul(s, BB) % modulus
 
-		target_list_LWE.append( v.transpose() + e ) 
-		target_list_unif.append( np.array([np.random.randint(modulus-1) for _ in range(rank)]) ) # BB * s + e )
+		target_list_LWE.append( v.transpose() +e ) 
+		target_list_unif.append( np.array([np.random.randint(modulus) for _ in range(rank)]) ) # BB * s + e )
 		
 	# print(target_list_LWE)
 		# A_big = [ [Id ] , [A] ]  
