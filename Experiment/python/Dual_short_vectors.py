@@ -16,8 +16,7 @@ if is_LWE :
 	# A = B.submatrix(range(0,int(log_covolume)), range(int(m), rank))
 	_A = [[0 for _ in range(int(rank/2))] for _ in range(int(rank/2))]
 	_ = A.to_matrix(_A)
-	print(B)
-	print(_A)
+
 	tmp = []
 	for i in range(int(rank/2)):
 		r = [0 for _ in range(rank)]
@@ -33,7 +32,7 @@ if is_LWE :
 
 	B_perp = IntegerMatrix(rank,rank)
 	B_perp.set_matrix(tmp)
-	print(B_perp)
+	# print(B_perp)
 
 	"""
 	If B = [[I_m | A ] , [0 | q I_k]] , then
