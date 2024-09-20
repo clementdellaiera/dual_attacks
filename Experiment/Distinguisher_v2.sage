@@ -17,7 +17,7 @@ for k in range(T_len - 1) :
 	T_matrix_LWE , T_matrix_unif = block_matrix([[ T_matrix_LWE , target_list_LWE[k+1] ]]) , block_matrix([[ T_matrix_unif , target_list_unif[k+1] ]])
 	
 data_LWE , data_unif = W_matrix * matrix(ZZ , T_matrix_LWE) , W_matrix * matrix(ZZ , T_matrix_unif) 
-cos_data_LWE , cos_data_unif = np.cos(data_LWE) , np.cos(data_unif)
+cos_data_LWE , cos_data_unif = np.cos( (2/RR(modulus)) * np.pi * data_LWE) , np.cos((2/RR(modulus)) * np.pi * data_unif)
 
 print(np.mean(cos_data_LWE) , np.mean(cos_data_unif )  )
 '''
