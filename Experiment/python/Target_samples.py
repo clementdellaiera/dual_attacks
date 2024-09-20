@@ -16,7 +16,7 @@ if is_LWE :
 	m  = rank - log_covolume			# m = n - k
 	A = B.submatrix(range(0,int(log_covolume)), range(int(m), rank))  # A in ZZ^{ m x k } such that B = qary Lattice of LWE (A)
 	# print(A)
-	for i in range(1):
+	for i in range(T):
 		# s , e = random_matrix(R , 1 , rank ) , random_matrix(R , rank , 1 )
 		s = np.array([np.random.randint(modulus) for _ in range(rank)])
 		_BB = [[0 for _ in range(rank)] for _ in range(rank)]

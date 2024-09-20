@@ -8,7 +8,7 @@ from Dual_short_vectors import *
 # target_list_LWE , target_list_unif = load('Target_samples/target_samples')
 
 W_len , T_len = len(short_vector_list) , min(len(target_list_LWE) , len(target_list_unif))
-print(W_len)
+
 data_LWE=[]
 for target_LWE  in target_list_LWE :
 	D_LWE = 0
