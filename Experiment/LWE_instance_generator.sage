@@ -7,6 +7,6 @@ if is_LWE :
 else :
 	B = random_matrix(ZZ, rank)
 	
-Param = [ is_LWE , rank , modulus , log_covolume ]	
+Param = [ is_LWE , stdev , rank , modulus , log_covolume ]	
 # Save to folder
 save((Param , B) , 'Lattice_basis/basis_LWE')
