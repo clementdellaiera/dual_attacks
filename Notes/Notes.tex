@@ -1,0 +1,235 @@
+\documentclass{article}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\usepackage{hyperref}
+
+\setlength\parindent{0pt} %no indentation for paragraph
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+
+\title{Notes sur les attaques duales}
+\author{Clément Dell'Aiera}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\maketitle
+
+On étudie les Dual-Sieve-FFT attacks sur le problème BDD.
+
+Pour Clémence,
+
+(0) Notions sur les réseaux : définitions, exemples de familles de réseaux utilisés en cryptographie, protocoles existants (en particulier ceux soumis au NIST), lien avec la cryptographie post-quantiques (et enjeux d'icelle), problèmes calculatoires liés aux réseaux (BDD,  LWE, NP, réduction du cas moyen au pire cas etc), attaques duales, algorithmes de réduction (Gauss en dimension 2, et LLL puis BKZ), cribles et énumération. Peut-être : notion sur les tests statistiques, ainsi que sur la complexité algorithmique.  
+
+(1) Donner les détails du lien entre BDD et LWE : quel instance particulière de BDD et avec quel réseau donne un problème LWE.
+
+(2) Implémentations : fpLLL et G6K en Sage, implémenter un distingueur et l'attaque.
+
+(3) Un exemple peut-être intéressant : on se donne un réseau $\Lambda_0$ sur lequel BDD est facile à résoudre, et on génère un sur-réseau $\Lambda$ d'indice fini aléatoirement\footnote{Par exemple, on génère aléatoirement une suite d'entiers $d_k$ qui se divisent successivement et on prend pour base de $\Lambda$ une base de $\Lambda_0$ multipliée par $diag(d_k)$ cf section 3.2 de \cite{DucasPulles}.}. On applique alors l'attaque généralisée de Ducas-Pulles. Par exemple si le quotient $G$ est un code aléatoire difficile, est ce que BDD sur $\Lambda$ est aussi fort que le décodage par syndrome sur $G$?
+
+\section{Revue de la littérature}
+
+\subsection{Laarhoven Walter (2021)}
+
+Modélisation statistique du Distingueur et dérivation de l'estimateur de Neyman-Pearson. Comparaison avec l'estimateur de Aharonov-Regev et l'estimateur le plus simple (la somme des cosinus). 
+
+La notion de distingueur optimal est à éclaircir. Les auteurs semblent se reposer sur le nom de l'estimateur pour en conclure qu'il est "le meilleur", sans pour autant détailler quels critères l'estimateur de Neyman-Person optimise (l'erreur de seconde espèce parmi les estimateurs de risque fixé, je crois).
+
+Une question intéressante : calculer l'erreur de seconde espèce pour le test associé (on peut comparer AR et NP). Plus tard dans ces notes, on explique que maximiser le score sur un échantillon revient à effectuer le test de distinction 'H0 : le target suit une loi uniforme' vs 'H1 : le target suit une loi LWE' pour chacun des éléments de l'échantillon pour ensuite séelctionner l'élement dont le test a la meilleure p-value.
+
+\subsection{Guo Johansson (2021)}
+
+Computation of the statistical distance between the probability distributions of $\langle w , t \rangle \pmod{1}$ for $t$ uniform and gaussian.  
+
+\subsection{Matzov (2022)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Ducas Pulles (2023)}%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{} Page 3 : DP remarque que l'évaluation de l'attaque repose sur l'hypothèse d'indépendance des termes de la somme du score (Independance Heuristic). Ils pointent aussi du doigt que si le bruit d'une erreur LWE est trop grande (dépasse la Gaussian Heuristic, i.e. si la distance au réseau est plus grande que le rayon de recouvrement du réseau) alors il ne devrait pas être possible de distinguer LWE d'un tirage uniforme.\footnote{J'ai l'impression que leur argument (tout à fait valable) peut se retourner contre leurs analyses. Les scores sont en effet non indépendants, pourtant ils le supposent plus tard lors de leur modélisation, lorsqu'ils affirment qu'un tirage BDD parmis un grand nombre de tirages uniforme n'aura pas forcéement le score le plus elevé. Cela est vrai, en supposant independance dans l'échantillon.}
+
+Le dernier argument est intéressant : ils affirment que distinguer une instance BDD d'un GRAND NOMBRE de cibles uniformes (indépendantes) est voué à l'échec car l'échantillon uniforme va avoir tendance à recouvrir le domaine fondamental du réseau et va donc produire des points arbitrairement proches d'icelui. Cet argument repose toutefois fortement sur l'indépendance des termes du score, ce qui est étonnant : les auteurs pointent du doigt ce même défaut dans les travaux antérieurs.   
+
+Si l'on veut distinguer un tirage BDD d'un tirage uniforme, un problème que l'on va rencontrer est le suivant. La loi uniforme va recouvrir l'intervalle, et si l'on ne tire qu'un seul tirage BDD contre un grand nombre de tirage INDEPENDANTS uniformes, alors l'un de ces tirages finira fatalement par être plus proche du réseau que le tirage BDD.
+
+Pourtant l'attaque fonctionne en pratique. Les auteurs s'en sortent en affirmant que leurs critiques ne s'appliquent qu'à un régime (entendre un choix de paramètres) théorique qui n'est pas celui choisi en pratique par les travaux plus anciens.
+
+\subsubsection{}
+
+Page 6 est 'prouvée' l'identification entre dual au sens des réseaux et dual unitaire au sens de théorie des représentations des groupes localement compacts. On rappelle ce résultat standard : l'application 
+$$w \in \Lambda^\vee \mapsto \left(t\in V \mapsto \exp(2i\pi \langle w,t \rangle)\right)$$ 
+induit un isomorphisme $$\Lambda^\vee \cong \widehat{V/\Lambda}.$$ 
+
+Les auteurs rappellent page 7 l'heuristique gaussienne : pour un réseau aléatoire de covolume 1, $\lambda_1$ peut être approximé par $\mathfrak{gh}_n = vol(B_n)^{\frac{1}{n}}$. De manière générale,
+$$\lambda_k \approx \mathfrak{gh}_n \cdot k^{\frac{1}{n}}.$$ %\simeq 
+
+Cette heuristique se trouve aussi sous la forme suivante : si $\Lambda$ est un réseau aléatoire, et $\Omega$ une partie mesurable de $V$, alors 
+\[\frac{Vol(S)}{Covol(\Lambda)} \approx |S\cap \Lambda|.\]
+J'imagine que par réseau aléatoire est sous-entendu l'unique mesure de probabilité invariante\footnote{Tout quotient d'un groupe localement compact par un réseau possède une unique mesure de probabilité invariante} sur $GL(n,\mathbb R) / GL(n,\mathbb Z)$. Dans \cite{Shen}, on étudie la mesure de probabilité donnée par 
+\[\mathbb P(\Lambda = \Lambda_q (A) ) = \frac{1}{|M_n(\mathbb Z / q\mathbb Z)|}.\]
+On peut se demander si cette probabilité est naturelle. On voit que $\Lambda_q(A) = \Lambda_q(A')$ ssi 
+\[\begin{pmatrix} I_n & 0 \\ A & qI_m \end{pmatrix} GL(m+n,\mathbb Z) = \begin{pmatrix} I_n & 0 \\ A' & qI_m \end{pmatrix}GL(m+n,\mathbb Z)\]
+i.e. il existe $g\in M_{m,n}(\mathbb Z), h \in M_{n,m}(\mathbb Z)$ telle que 
+\[\begin{split} 
+A-A' & = qg \\
+gh   & = qI_m \\
+\end{split}\]	 
+
+ 
+\subsubsection{}
+
+Je ne comprends pas l'intérêt de
+$$\mathbb P( \forall i , f_W(t_{bdd}) > f_W(t^{(i)}_{unif}) )   $$
+dans l'étude de la puissance du test. Note : Je pense avoir compris. C'est la probabilité de distinguer une target LWE dans un échantillon contenant des uniformes sur le domaine fondamental. On ne parle pas de l'existence d'un distingueur, mais de la probabilité de réussite du test consistant à choisir le tirage dont le score est le plus élevé.
+
+\subsubsection{}
+
+La partie FFT de l'attaque est formalisée de la manière suivante. On se donne un sous-réseau $\Lambda_0 < \Lambda $ d'indice fini, et on note $G$ le groupe quotient (fini). Les auteurs affirement que le problème $BBD_{\Lambda}(t)$ se réduit aux problèmes $BDD_{\Lambda_0}(t+g) \forall g \in G$. Plutôt que d'évaluer chaque score $f_{W_0}(t+g)$ séparément, on évalue la transformée de Fourier de la fonction $g \mapsto  f_{W_0}(t+g)$, qui se calcule de manière analytique, puis on lui applique la transformée de Fourier inverse.
+
+Il faudrait détailler ce passage. J'en comprends que l'on suppose savoir 
+
+\subsubsection{}
+Je ne comprends pas la remarque "Randomized Sparsification" à la fin de la page 14.	
+
+\subsubsection{}
+Trouver une référence pour le théorème page 18, qui donne une version alternative (et réelle) de l'heuristique gaussienne, affirmant que si $t\sim \mathcal U(\mathbb R^n/\Lambda)$ et si $V\subset \mathbb R^n$ est mesurable, 
+$$\mathbb E|(V -t)\cap \Lambda | = \frac{vol(V)}{det(\Lambda)}$$
+On peut le montrer de la manière suivante. On définit la forme linéaire continue sur l'espace des fonctions continues à support compact sur $\mathbb R^n$ par 
+$$f\mapsto \sum_{v\in \Lambda} \mathbb E[f(v+t )]. $$
+La mesure qui représente cette forme linéaire est invariante par translation, elle est donc proportionnelle à la mesure de Lebesgue. (En fait on raisonne par pull back de la mesure de Lebesgue par l'isomorphisme $\mathbb R^n \cong \Lambda \times \mathbb R^n /\Lambda$)\qed 
+
+\subsubsection{}
+
+La discussion page 18 (The Contradiction) a l'air raisonnable\footnote{On peut reprocher aux auteurs d'être trop vague : le résultat montre que le distingueur basé sur la maximisation du score sur un échantillon contenant un nombre très grand de targets uniformes indépendants et un target bdd ne fonctionne pas dans tous les régimes, notament si la variance du bdd est trop grande et/ou si le nombre de targets uniformes est trop grand. Le lien avec l'attaque duale n'est pas clair : l'hypothèse d'indépendance ne tient pas.}. Même si l'on souhaite utiliser des grande déviations, les bornes obtenues vont dépendre de la constante de Lipschitz du distingueur. Dans le cas du distingueur AR, celle-ci est dominée par la taille maximale de $W$, et le résultat de l'argumentation de Ducas-Pulles ne contradit pas le nôtre : on ne peut pas distinguer n'importe quoi. Le problème est de distinguer une target LWE située à une distance $r\cdot GH(n)$ d'une uniforme sur un domaine fondamental?? 
+
+Voici une formalisation de cette argument. Soit $t_1,\cdots ,t_n$ des variables aléatoires indépendantes satisfaisant à :
+\begin{itemize}
+\item[$\bullet$] il existe $i_0$ telle que $t_{i_0}$ suive une loi BDD.
+\item[$\bullet$] pour tout $i\neq i_0$, $t_i$ suivent une loi uniforme.
+\end{itemize}
+On note $i^* = \text{argmin}_i f(t_i) . $
+Alors $\lim_{n\rightarrow \infty } \mathbb P(i_0\neq i^* ) =1$. Cet argument est valide, cependant il ne s'applique pas tel quel à l'attaque : les targets ne sont pas indépendants : $t_s = t - As $.
+
+La première partie de 4.2 pousse les arguments de Matzov et GuoJohannson jusqu'à une supposée contradiction : si l'attaque fonctionne, on arrive a distinguer un target BDD parmi un nombre exponentiel de BDD uniformes (indépendants? l'hypothèse semble nécéssaire au raisonnement mais n'est précisé nul part).  
+
+Le lemme 8 montre que si $det(\Lambda) = 1$ et $t\sim\mathcal U(\mathbb R^n /\Lambda)$ alors
+$$\mathbb P( d(t , \Lambda ) \leq r\cdot GH(n) ) =  r^n \quad \forall r \text{ t.q. } r \cdot GH(n) < \frac{\lambda_1^{(\Lambda)}}{2}$$
+Si l'on a une seule target BDD $t_{bdd}$ et $T>>1$ target uniformes indépendantes $t^{(i)}_{unif}$, alors la probabilité qu'aucune des target uniformes ne tombent dans une boule de rayon $r\cdot GH(n)$ centrée en le point du réseau est $(1-r^n)^T \sim_{T\rightarrow \infty} e^{-\alpha^n}$. L'espérance de la longueur du target BDD est $\sigma \sqrt n $ : avec une variance assez grande, le distingueur ne peut pas espérer utiliser la distance pour conclure.
+
+\subsubsection{}
+
+Une question : est-il possible que bien que des targets uniformes soient plus proches du réseaux que le target BDD, le distingueur AR discrimine correctement? C'est abordé dans Discusion page 20, et les auteurs répondent par la négative.
+
+En pratique, les targets uniformes ne sont pas indépendants : l'ensemble des targets (BDD y compris) est constitué des vecteurs 
+$$ t = A_0 s_0 +A_1 \tilde s_1 + e \quad (LWE) $$
+
+$$ t = B (x_0 + \tilde x_1 ) + e \quad (BDD) $$
+
+Donc les $t^{(i)}_{unif} $ sont exactement les $t-B\tilde x_1$ où les $\tilde x_1$ on été mal devinés. Ils ne sont pas indépendants (ils dépendent du même aléas $x_0$ et $e$)  
+
+Waterfall phenomenon : à investiguer. 
+
+Une question : lors de l'attaque duale, les tirages uniformes concernent les mauvais guess's. Ils ne sont pas indépendants: on observe
+$$ U_k = A_0 s_0 + A_1 (s_1 - s_guess_k) + e $$
+contre 
+$$ BDD = A_0 s_0 + e $$
+
+Calcul explicite de l'espérance et de la variance de $ cos( 2\pi \langle w , t\rangle )$ lorsque $t$ suit une loi uniforme $\mathcal U(\mathbb T_\Lambda)$ (on obtient $(0,\frac{1}{2})$) et si $t\sim \mathcal N_{\ell^2_n}(0 , \sigma^2 I_n) \pmod{\Lambda}$ (on obtient $(e^{-2\pi² \sigma^2 \|w\|^2} , \frac{1}{2} - \Theta(e^{-4\pi^2\sigma^2 \|w\|^2}))$.
+
+\subsection{Pouly Shen (2024)}
+
+Le papier étudie le distingueur dans le cas des réseaux associés au problème LWE, i.e. pour $A\in (\mathbb Z /q\mathbb Z )^{m\times n}$ avec $m\geq n$ et rang$(A)=n$,
+
+$$\Lambda_q(A) = \{x\in \mathbb Z^m | \exists y \in Z^n \text{ s.t. }Ay = x \pmod q \} ,$$
+$$\Lambda_q(A)^\perp = \{x\in \mathbb Z^m | Ax = 0 \pmod q \} = q \Lambda_q(A)^\vee.$$
+Les deux réseaux sont $q$-congruents. On suppose toujours $m\geq n$ et $A$ de rang maximal (on peut toujours se ramener à ce cas). Seul le cas $m>n$ est intéressant, car si $A$ est inversible, $\Lambda_q(A) = \mathbb Z^m$. En écrivant $A$ par blocs 
+$$A =\begin{pmatrix} A_0 \\ A_1\end{pmatrix},$$
+et si on suppose $A_0$ inversible, 
+$$B=\begin{pmatrix} I_n & 0 \\ A_1A_0^{-1} & qI_{m-n}\end{pmatrix} $$
+est une base de $\Lambda_q(A)$ et $(B^{-1})^t$ une base du dual.
+
+Mentionne dans l'introduction un papier de Meyer-Hifliger \& Tillich, Rigorous foundations for dual atacks in coding theory, qui prétend démontrer un lien entre attaques duales sur les réseaux et les codes. L'article prétend que le lien n'est pas si évident. Il serait intéressant de creuser.
+
+Page 3 : "contribution of this paper is to mak completely clear (Theorem 6) under what choice of parameters the attack works, without any statistical assumption." Cela est faux : ils ont bien défini un modèle statistiques qui a des hypothèses (par définition) d'autant plus qu'ils supposent l'indépendance des targets.
+
+En corollaire : résultats sur les réseaux congruents (j'appelle congruents les "q-ary lattices", par analogie avec les sous-groupes de congruences).
+
+Qu'est ce que le Monte Carlo Markov Chain discrete Gaussian sampler? Smmoting parameters : sampler pour une 'variance' au dessus est plus facile, sampler en dessous est plus difficile (assez bas et cela revient à résoudre SVP qui a été démontré dans NP par Atjai 1998)
+
+Utilisation d'intervalles de confiances exacts via l'inégalité de Hoeffding pour le distingueur au lieu d'un intervalle asymptotique donné par le TCL (et une approximation gaussienne)
+
+Page 8, je ne comprends pas 'In fact, a proper analysis shows that the minimum value of N needed for convergence is roughly the same as the value needed for distinguishing, so this is no small detail.'
+
+Calcul de \cite{19} : $\Phi_X(\frac{k}{q}) = \mathbb E[e^{2i\pi k X/q}] $ vaut
+\begin{itemize}
+\item si $X\sim \mathcal U(\mathbb Z/q)$, $\Phi_X(\frac{k}{q})  = 0$ pour tout $k$,
+\item si $X\sim \mathcal D_{\mathbb Z/q , s}$, $ e^{-\pi s^2k^2 / q^2} \leq \Phi_X(\frac{k}{q})  \leq 2e^{-\pi s^2k^2 / q^2}$ pour $k\in [-\lfloor q/2\rfloor , \lfloor q/2\rfloor ]$.
+\end{itemize}
+
+2.5 : le papier s'intéresse aux réseaux congruents. En temps qu'ensemble statistique, il est muni de la probabilité induite par le tirage uniforme d'une matrice de rang plein $A\in \mathbb Z_q^{n\times k}$ par rejet (donc uniforme sur les matrices de rang maximal). Tout réseaux congruents est isomorphe à un $\Lambda_q(A)$. Quelle mesure obtient-on? Les résultats de l'articles s'étendent-ils à tous les réseaux via la mesure de probabilité invariante de l'espace des réseaux?  
+
+L'heuristique gaussienne affirme que $\lambda_1(\Lambda)$ est environ $GH(n) = \left( \frac{vol(B_n)}{det(\Lambda)}\right)^{-\frac{1}{n}}$. Elle peut être précisée en un théorème sur la distribution de $\Lambda_1(\Lambda)$ en fonction d'une mesure de probabilité sur $\Lambda$. Pouly-Shen prouvent (Corolary 2 page 10) que si $A\sim \mathcal U(\mathbb Z^{k \times n}_{rk = \max (k,n)})$ et $\Lambda = \Lambda_q(A)$, alors
+$$ \mathbb P\left( \lambda_1( \Lambda ) \leq \varepsilon \mathfrak{gh}(\Lambda) \right) \leq q\varepsilon^n  $$
+
+Description de l'attaque duale page 13.
+
+Je ne comprends pas "The limitation ... is the requirement to compute one short vector for each tuple of m LWE-samples ... this is necessary to ensure statistical independance of the variables...". Ici on attaque LWE, et on peut se permettre de faire varier le réseau (en faisant varier la taille de la matrice $A\in \mathbb Z^{Nm \times n}$. Les vecteurs de $W$ sont samplés par blocks : on obtient des $w$ orthogonaux (le $k$-ième est supporté sur les coordonnées de $km$  à $(k+1) m -1$. Il reste toujours un problème : les variables aléatoires $\langle w , t \rangle $ ne sont pas indépendantes, elles ne le sont que sachant $t$ (ou alors si les composantes de $t$ sont indépendantes, ce qui n'a pas l'air d'être vrai pour les gaussiennes discrètes, sinon il serait simple de les simuler en se ramenant à la dimension 1).  
+
+page 14 -15 : justification de l'utilité du distingueur $g_W$. En notant $f_{L,s}(x) = \frac{\rho_s(x+L)}{\rho_s(L)}$ et 
+$$D_{L , s}  =\frac{1}{\rho(L)}\sum_{v\in L} \rho_s (v)\delta_v$$ 
+on a 
+\[\begin{split}
+s_{guess} & = \text{argmin}_s d(t - A_{guess} s , L ) \\
+	& \approx \text{argmin}_s \  f_{L, 1/s}(t - A_{guess} s) \\
+	& \approx \text{argmin}_s \ g_W(t - A_{guess} s ) \\
+\end{split}\]
+
+Dans 4.4 Complexity estimates : description de la complexité de la génération de vecteurs courts du réseau dual. Important : l'indépendance des vecteurs courts du réseau dual est garantie par la méthode de sampling utilisée (MCMC), c'est ici une modification par rapport aux attaques duales de Matzov ou GuoJohannson par exemple.
+
+\subsubsection{Discussion avec Yixin 12/07/2024}
+
+La zone d'application de l'attaque correspond à \[\frac{1}{2}\lambda_1(\Lambda_q(A)) > \|e\|\]
+ce qui garantie l'unicité d'une solution de LWE. La négation de cette condition redonne la zone de 'contradiction' de l'article de Ducas-Pulles. Pour Yixin, le sieving appliqué pour sampler $W$ restreint l'attaque à un sous-réseau $\Lambda_0$ de $\Lambda$. Il est donc possible que bien que l'on ne soit pas dans la condition $\frac{1}{2}\lambda_1(\Lambda) > \|e\|$, on ait
+$\frac{1}{2}\lambda_1(\Lambda_0) > \|e\|$. Remarque : c'est vrai que si $W$ est par exemple contenu dans le réseau $\Lambda_0$ engendré par $(q_1 b_1,\cdots , q_n b_n )$ avec $(b_1,\cdots , b_n )$ une base de $\Lambda$, on obtient $\lambda_1(\Lambda_0) \geq \min q_i \lambda_1(\Lambda)$.
+
+Yixin ne voit pas les termes du score comme des variables aléatoires. L'idée est que la fonction $f_W$ est une approximation d'une gaussienne de la distance au réseau. La maximiser revient à minimiser cette distance et donc à résoudre le problème LWE associé.
+ 
+Les articles de ling et Wang (\cite{wang2017geometric} \cite{wang2019lattice}) détaille une méthode de sampling de gaussienne discrète sur les réseaux utilisant les méthodes de Monte-Carlo. Là où sampler par GPV donne un algorithme polynômial qui ne permet pas de descendre en dessous du smoothing parameter du réseau, la méthode basée sur le MCMC permet de le faire en étant une tout petit peu plus que polynômial.
+ 
+\section{Sieving}
+ 
+06/09/2024 : Depuis la rentrée, installation de g6k (et fpylll) et montée en compétence sur le sieving. 
+Ref : \\
+thèse de Postlewaite, \\
+Ducas A few dimensions for free\\
+Papier g6k, 
+plus le talk \url{https://www.youtube.com/watch?v=g4fGalYrvAI&t=255s} de Elena Kirshanova.
+
+\section{Idées}
+
+(1) Test d'indépendance du chi-deux sur des samples de $\cos(2  \pi * \langle w , t \rangle)$ lorsque t suit une distribution $\mathcal U(\mathbb Z_q)$ ou une $A * s + e$ avec $s$ et $e$ des gaussiennes 
+ 
+(2) Marche aléatoire pour sampling sur $W$ et théorème limite associé pour intervalle de confiance (Azuma = Hoeffding pour les martingales) 
+ 
+(3) Autre fonction de score: la fonction somme des $\cos(2 \pi \langle w,t\rangle )$ est une approximation de la transformée de Fourier d'une mesure de probabilité symétrique sur le dual
+
+(4) Utiliser G6K pour le sampling
+
+\section{Remarques}   
+
+(1) Ducas a fait des experimentations numériques en faisant du sieving avec G6K. Il affirme que les targets As + e, qui devraient etre des gaussiennes, n'en ont pas l'air (a voir probleme dejà connu dans les codes cf 6.1 Waterfall phenomenon
+
+(2) Regarder ce que donnent des bases BKZ du dual qui seraient moins bonnes (generer les vecteurs de depart "un peu comme on veut")
+
+(3) Exhiber un cas particulier qui ne se passe pas correctement (comme dans Ducas-Pulles) pour le corriger
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{plain}
+\bibliography{biblio}
+\end{document}
