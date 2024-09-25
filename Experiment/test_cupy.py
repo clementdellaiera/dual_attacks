@@ -1,6 +1,8 @@
 import numpy as np
 import cupy as cp
 import time
+from os import environ
+environ['OMP_NUM_THREADS'] = '12'
 
 
 iterations = 1  # Number of iterations
