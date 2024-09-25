@@ -84,7 +84,7 @@ start_mul = time.time()
 data_unif = cp.matmul(cp_unif, cp_W_transpose) % modulus
 print("Calcul multiplication #4 GPU (en s): ", time.time() - start_mul)
 start_mul = time.time()
-data_LWE = cp.matmul(cp_LWE, cp_LWE.transpose()) % modulus
+data_LWE = cp.matmul(cp_LWE, cp_W_transpose) % modulus
 print("Calcul multiplication #5 GPU (en s): ", time.time() - start_mul)
 ########################################################################
 
