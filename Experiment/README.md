@@ -17,7 +17,12 @@ Dual_short_vectors.sage
 			from Lattice_basis/basis_LWE.sobj'
 	Output  | modulus , short_vector_list : int , list of vectors in dual lattice
 			to 'Dual_short_vectors/dual_short_vectors.sobj'
-
+	Needs	| Numpy
+		|  	
+		| Cupy 
+		| https://docs.cupy.dev/en/stable/install.html
+	
+	
 Target_samples.sage
 	Input	| Variables from Parameters.sage 
 		| [ is_LWE , rank , modulus , log_covolume ] , B : parameter_set ( bool , int , int , int ) , basis of lattice  
