@@ -1,12 +1,14 @@
 ##   Load lattice basis 
 load('Parameters.sage')
-[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE.sobj')
+[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE_50.sobj')
 
 from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler \
     as DiscreteGaussian
 
+stdev = 0.01
+
 D = DiscreteGaussian(stdev)
-e = matrix(ZZ, [D() for _ in range(rank)]).transpose()
+# e = matrix(ZZ, [D() for _ in range(rank)]).transpose()
 
 
 if is_LWE :
@@ -18,6 +20,7 @@ if is_LWE :
 	for i in range(T):
 		# s , e = random_matrix(R , 1 , rank ) , random_matrix(R , rank , 1 )
 		s = random_matrix(R , 1 , rank )
+		e = matrix(ZZ, [D() for _ in range(rank)]).transpose()
 		target_list_LWE.append( (s * BB).transpose() + e ) , target_list_unif.append( random_matrix(R , rank , 1 ) ) # BB * s + e )
 		
 		# A_big = [ [Id ] , [A] ]  
