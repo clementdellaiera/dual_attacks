@@ -4,6 +4,8 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 
+%\usepackage{nicematrix}
+
 \setlength\parindent{0pt} %no indentation for paragraph
 
 \newtheorem{definition}{Definition}
@@ -216,17 +218,6 @@ For the gaussian function $\rho_s(t) = \exp(-s\pi\|t\|^2)$,
 which yields the classical identity\footnote{$\Theta_{\Lambda}(s) = \rho_s(\Lambda)$.} for thêta functions
 \[ \Theta_{\Lambda}(s) = covol(\Lambda)^{-1}s^{-n/2}\Theta_{\Lambda^\vee}(s^{-1}).\]
 
-\subsection{Random euclidean lattices}
-The map that sends a basis to the generated lattice yields a measurable model 
-\[\mathcal L_n \cong  GL(n,\mathbb R) / GL(n,\mathbb Z) \]
-for the space of lattices. Since $GL(n,\mathbb Z)$ is a lattice in $GL(n,\mathbb R)$, $\mathcal L_n$ admits a unique invariant probability measure $\mu_n$. In a similar manner, lattices of covolume $\rho$ admit an invariant probability measure from the model 
-\[\mathcal L_{n,\rho} \cong \mathcal L_{n,1}\cong SL(n,\mathbb R) / SL(n,\mathbb Z)\]
-These measures are called the Haar-Siegel probability measures in the litterature.
-
-% Ajouter les résultats sur l'heuristic gaussienne vu comme une approximation de E[f(L)]  = \int f d\mu [section 2.5 de Dadush Regev]
-% d'où E[ | L\{0} \cap A|] = Vol(A)
-% Goldstein Mayer 2003 : la mesure uniforme (en fait ils considèrent la mesure uniforme sur l'ensemble fini des réseaux entiers de covolume fixé égal à N) sur les réseaux de congruence converge en un sens fort vers la mesure \mu . Les réseaux de congruence ne sont pas exactements ceux là, leur volume est un diviseur de q^n, de plus un réseau entier de covolume N ne contient pas nécessairement NZZ^n.
-% Pouly Shen donne dans D3 et D4 une version quantitative de l'heuristique gaussienne pour les réseaux de congruence. 
 
 \subsection{Congruence lattices}
 A congruence lattice\footnote{The accepted terminology in the computer science community is $q$-ary.} is a lattice $\Lambda$ of $\mathbb R^n$ such that 
@@ -239,13 +230,66 @@ these inclusions entails basis of congruence lattices are matrices in
 \[\{B\in M(n,\mathbb Z) : \exists g\in GL(n,\mathbb Z[\frac{1}{q}] ) \ : \ Bg = gB = qI_n \}\]
 %$M(n,q\mathbb Z)\cap GL(n,\mathbb R) \subset GL(n,\mathbb Z[\frac{1}{q}])$, i.e.
 %\[\mathcal L_{n,q} \cong \left(M(n,q\mathbb Z)\cap GL(n,\mathbb Z[ \frac{1}{q} ])\right) / GL(n,\mathbb Z)\] 
+   
+\subsubsection{}
+
+For $A\in (\mathbb Z/q\mathbb Z)^{n\times k}$, we define the lattices
+\[\mathcal L(A) = \{x\in\mathbb Z^{n} \ : \ \exists y\in\mathbb Z^k \text{s.t. } x = Ay \pmod{q} \}\]
+and
+\[\mathcal L(A)^\perp = \{x\in\mathbb Z^{n} \ :\ A^{T}x = 0 \pmod{q} \}.\]
+These lattices are $q$-congruent. Moreover $q\mathcal L(A)^\vee = \mathcal L(A)^\perp$.   
+
+Removing any set of columns from $A$ such that the obtained matrix has same range doesn't change $\mathcal L(A)$. We can thus suppose that $m>n$ and that $A$ is a maximal rank, rank$(A)=n$. Up to a change of basis, $A$ can be thus be supposed of the type 
+\[\begin{pmatrix}
+I_k \\
+A_0
+\end{pmatrix}\]
+with $A_0\in (\mathbb Z/q\mathbb Z)^{m\times n}$. In that case a basis for $\mathcal L(A)$ is 
+\[
+\begin{pmatrix}
+  I_m & A_0 \\ 0 & qI_k 
+\end{pmatrix}
+\]
+and a basis for $\mathcal L(A)^\perp$ is 
+\[
+\begin{pmatrix}
+  q I_m & 0 \\  - A_0 & I_k \\
+\end{pmatrix},
+\]
+which, once multiplied by $q^{-1}$, gives a basis of $\mathcal L(A)^\vee$. We also have covol$(\mathcal L(A))=q^{k}$, covol$(\mathcal L(A)^\perp)=q^{m}$, and of course covol$(\mathcal L(A))^\vee=q^{-k}$ as expected.
+
+
+\subsection{Random euclidean lattices}
+The map that sends a basis to the generated lattice yields a measurable model 
+\[\mathcal L_n \cong  GL(n,\mathbb R) / GL(n,\mathbb Z) \]
+for the space of lattices. Since $GL(n,\mathbb Z)$ is a lattice in $GL(n,\mathbb R)$, $\mathcal L_n$ admits a unique invariant probability measure $\mu_n$. In a similar manner, lattices of covolume $\rho$ admit an invariant probability measure from the model 
+\[\mathcal L_{n,\rho} \cong \mathcal L_{n,1}\cong SL(n,\mathbb R) / SL(n,\mathbb Z)\]
+These measures are called the Haar-Siegel probability measures in the litterature.
+
+
+% Ajouter les résultats sur l'heuristic gaussienne vu comme une approximation de E[f(L)]  = \int f d\mu [section 2.5 de Dadush Regev]
+% d'où E[ | L\{0} \cap A|] = Vol(A)
+% Goldstein Mayer 2003 : la mesure uniforme (en fait ils considèrent la mesure uniforme sur l'ensemble fini des réseaux entiers de covolume fixé égal à N) sur les réseaux de congruence converge en un sens fort vers la mesure \mu . Les réseaux de congruence ne sont pas exactements ceux là, leur volume est un diviseur de q^n, de plus un réseau entier de covolume N ne contient pas nécessairement NZZ^n.
+% Pouly Shen donne dans D3 et D4 une version quantitative de l'heuristique gaussienne pour les réseaux de congruence. 
+\subsubsection{}
 Let $\Gamma_0 , \Gamma_1$ be two lattices in a l.c. group $G$ such that $\Gamma_0$ is of finite index in $\Gamma_1$, then 
 \[ \text{covol } \Gamma_0  = [\Gamma_1 : \Gamma_0 ] \ \text{covol } \Gamma_1 .\]
 As a consequence, $\text{covol }\Lambda $ is equal to the index $[\mathbb Z^n : \Lambda]$ and divides $q^n$.
 
 Let $\Lambda$ be an euclidean lattice, and $F$ be a finite group of cardinal $k$. Let us define $\mathcal L_{n , F}(\Lambda ) $ be the set of lattices $\Lambda'$ containing $\Lambda$ and satifying that $\Lambda' / \Lambda $ is isomorphic to $F$. This set is finite and it follows from \cite{ordentlich2022new} (proposition 2.1) that
 \[\int \varphi d\mu_{n,k^{-1}} = \int_{\mathcal L_n} \frac{1}{k}\sum_{\Lambda'\in \mathcal L_{n , F}(\Lambda )} \varphi(\Lambda') d\mu_{n}(\Lambda)  \quad \forall \varphi \in C_c(\mathcal L_{n,k^{-1}} ) \]
-As a consequence, the uniform probability measure on $q$-congruence lattices is the law $\Lambda'$ obtained by drawing $\Lambda$ according to $\mu_{n,1}$, and then drawing $\Lambda'$ in $\mathcal L_{n,\mathbb Z^n /q\mathbb Z^n}(\Lambda)$ uniformly, conditionally to the event $\{\Lambda = q\mathbb Z^n\}$.   
+As a consequence, the uniform probability measure on $q$-congruence lattices is the law $\Lambda'$ obtained by drawing $\Lambda$ according to $\mu_{n,1}$, and then drawing $\Lambda'$ in $\mathcal L_{n,\mathbb Z^n /q\mathbb Z^n}(\Lambda)$ uniformly, conditionally to the event $\{\Lambda = q\mathbb Z^n\}$.
+
+\subsubsection{Equidistribution of Hecke points}
+Let $N$ be a positive integer. Let us denote by $\mathfrak H_N$ the space of integer lattices of covolume $N$. It is a finite set. Renormalizing by $N^{-\frac{1}{n}}$ gives a map $\mathfrak H_N \rightarrow \mathcal L_{n,1}$: let us denote by $\mathfrak h_{N}$ its push-forward of the uniform probability measure on $\mathfrak H_N$. 
+
+\begin{theorem}[Theorem 2.2 of \cite{goldstein2003equidistribution}]
+For every $f\in C_c(\mathcal L_{n,1})$
+\[\lim_{N\rightarrow +\infty} \int_{\mathcal L_{n,1}} f d\mathfrak h_{N} = \int_{\mathcal L_{n,1}} fd\mu_{n,1}\]
+\end{theorem}
+
+This result allows to approximate the Haar-Siegel probability measure by the measure obtained by fixing a big integer $N$, drawing uniformly a random element of the finite set $\mathfrak H_N$, then renormalizing by $N^{-\frac{1}{n}}$.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Relative BDD}%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -59,11 +59,6 @@ print('Mean of distinguisher values LWE | uniform : ', cp.mean(AR_distinguisher_
 print('Computation of distinguisher values : ', time() - counter , ' sec.')
 print('Total execution time : ', time() -start, ' sec.')
 
-
-
-
-
-
 ################
 ##   Graphs   ##
 ################

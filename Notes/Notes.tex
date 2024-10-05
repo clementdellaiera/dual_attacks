@@ -203,13 +203,29 @@ Les articles de ling et Wang (\cite{wang2017geometric} \cite{wang2019lattice}) d
  
 \section{Sieving}
  
-06/09/2024 : Depuis la rentrée, installation de g6k (et fpylll) et montée en compétence sur le sieving. 
+06/09/2024 : \\
+Depuis la rentrée, installation de g6k (et fpylll) et montée en compétence sur le sieving. 
 Ref : \\
 thèse de Postlewaite, \\
 Ducas A few dimensions for free\\
-Papier g6k, 
-plus le talk \url{https://www.youtube.com/watch?v=g4fGalYrvAI&t=255s} de Elena Kirshanova.
+Papier g6k, \\
+plus le talk \url{https://www.youtube.com/watch?v=g4fGalYrvAI&t=255s} de Elena Kirshanova.\\
 
+04/10/2024 :\\
+Résultats des expérimentations : le sieving via g6k mets environ 40 minutes sur notre machine perso pour échantillonner environ 250 000 vecteurs courts dans un réseau de congruence. Le calcul du distingueur se fait ensuite en quelques secondes, et nous observons que le régime de validité d'icelui dépend fortement du paramètre de déviation de l'erreur. Le distingueur commence à être trop petit sur les targets LWE dès que $s$ dépasse 0.5. Bien que cette deviation soit bien inférieure au régime de validité de l'attaque donnée par Pouly-Shen, cela est attendu car l'attaque est faite sur un échantillon avec des termes fortement dépendants les uns des autres.\\
+
+Il serait utile de tester le distingueur sur un échantillon typique de l'attaque. 
+
+But : on note $t^* = As+e$ un échantillon LWE, et on se donne un échantillon $(t_k)_{k\in\{1,N\}}$, avec $t_k = t^* - A s_k$ où $s_k$ est tiré uniformément. Par convention $s_0=0$. On ordonne 
+\[ f_W(t_{(0)})<\cdots < f_W(t_{(n)}) \]
+On souhaite décrire la distribution du rang de $t^*$, i.e. de $k^*$ tel que $f_W(t_{(k^*)}) = f_W(t^*)$.
+On peut décrire les résultats des papiers de la manière suivante :
+\begin{itemize}
+\item[$\bullet$] Ducas-Pulles affirment que 
+\[\frac{|\{k \ : \ k < k^* \}|}{n} \approx \frac{\text{vol }B}{\text{covol }\Lambda}\]
+où $B$ est la boule centrée en le point du réseau le plus proche de $t^*$ et de rayon la distance de $t^*$ au réseau.
+\item[$\bullet$] Pouly-Shen affirment que $k^*\approx 1$.
+\end{itemize}
 \section{Idées}
 
 (1) Test d'indépendance du chi-deux sur des samples de $\cos(2  \pi * \langle w , t \rangle)$ lorsque t suit une distribution $\mathcal U(\mathbb Z_q)$ ou une $A * s + e$ avec $s$ et $e$ des gaussiennes 
