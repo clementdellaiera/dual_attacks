@@ -2,17 +2,17 @@ from fpylll import IntegerMatrix, FPLLL
 from fpylll.util import gaussian_heuristic
 from g6k import Siever 
 from time import time
+import sys
 
 FPLLL.set_random_seed(1337)		# Seed set for reproducibility of experiments
 
 
 # Parameters
 
-stdev, rank , modulus  = 0.5, 50 , 931  # stdev parameters for discrete gaussian error in LWE, dimension of lattice , modulus of LWE instances
+# stdev, rank , modulus  = 1, 20 , 931  # stdev parameters for discrete gaussian error in LWE, dimension of lattice , modulus of LWE instances
+rank , modulus  = Integer(sys.argv[1]), Integer(sys.argv[2])
 log_covolume = rank // 2			# log_covolume = k = n-m | IntegerMatrix takes for qary lattices k in det L = q**k as parameters | basis of type [ [I_{n-k} , A ] , [0 , q I_k]] with size(A) = (n-k , k)
-
-
-T = 1000 				# Size of target samples
+# T = 1000 				# Size of target samples
 
 
 # Instance generation
@@ -72,4 +72,4 @@ for x in data_base:
 print("Found %d vectors of squared length than 1.7*gh. (expected %f)"%(found, .5 * 1.7**(rank /2.)))
 print('Execution time : ', time() - start , ' sec.')
 
-save((modulus ,short_vector_list) , 'Dual_short_vectors/dual_short_vectors')
+save((modulus ,short_vector_list) , 'Dual_short_vectors/dual_short_vectors_{}_{}'.format(sys.argv[1], sys.argv[2]))
