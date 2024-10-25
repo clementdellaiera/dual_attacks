@@ -28,3 +28,27 @@ if is_LWE :
 		# B * s + e 	= s_0 + A * s_1 + e_0 	, q s_1 + e_1
 		
 save( ( target_list_LWE , target_list_unif) , 'Target_samples/target_samples' )		
+
+
+
+size_db_random_s = 100
+if is_LWE :
+	target_list = []
+	R  = Zmod(modulus) 				# ZZ mod q
+	m  = rank - log_covolume			# m = n - k
+	BB = matrix(ZZ,B) 
+	A  = BB[0:log_covolume, m:rank]			# A in ZZ^{ m x k } such that B = qary Lattice of LWE (A)
+	A0 = BB[0:k, m:rank]
+	A1 = BB[k:log_covolume, m:rank]
+	s0 = random_matrix(R , 1 , k )
+	s1 = random_matrix(R , 1 , rank - k )
+	e = matrix(ZZ, [D() for _ in range(rank)]).transpose()
+	target_list_LWE.append( (s0 * BB).transpose() + e )
+	for i in range(size_db_random_s):
+		# s , e = random_matrix(R , 1 , rank ) , random_matrix(R , rank , 1 )
+		s_tilde = random_matrix(R , 1 , rank )
+		target_list.append( (s * BB).transpose() + e )  # BB * s + e )
+		
+		# A_big = [ [Id ] , [A] ]  
+		# A_big * s + e = s_0 + e_0 		, A s_1 + e_1
+		# B * s + e 	= s_0 + A * s_1 + e_0 	, q s_1 + e_1

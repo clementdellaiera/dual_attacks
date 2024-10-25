@@ -61,15 +61,27 @@ gh = gaussian_heuristic([g6k.M.get_r(i, i) for i in range(rank)])
 data_base = list(g6k.itervalues())
 found = 0
 
+
+
+file_name = '/local/opt/tuonguye/Dual_short_vectors/dual_short_vectors_{}_{}.txt'.format(sys.argv[1], sys.argv[2])
+with open(file_name, "w") as f:
+            f.close()
 for x in data_base:
     v = B_perp.multiply_left(x)
     l = sum(v_**2 for v_ in v)
     if l < 1.7 * gh:
         # print(l/gh, v)
         found += 1
-        short_vector_list.append(v)
+        # short_vector_list.append(v)
+        with open(file_name, "a") as f:
+            f.write(str(v) + '\n')
+
 
 print("Found %d vectors of squared length than 1.7*gh. (expected %f)"%(found, .5 * 1.7**(rank /2.)))
 print('Execution time : ', time() - start , ' sec.')
 
-save((modulus ,short_vector_list) , 'Dual_short_vectors/dual_short_vectors_{}_{}'.format(sys.argv[1], sys.argv[2]))
+
+
+
+
+# save((modulus ,short_vector_list) , 'Dual_short_vectors/dual_short_vectors_{}_{}'.format(sys.argv[1], sys.argv[2]))
