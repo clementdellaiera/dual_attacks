@@ -1,11 +1,15 @@
 ##   Load lattice basis 
 load('Parameters.sage')
-[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE_50.sobj')
-
 from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler \
     as DiscreteGaussian
-
+ 
+file_path = 'Target_samples/target_samples_isLWE_' + str(is_LWE)+'_stdev_' +str(stdev )+'_rank_' +str(rank )+'_modulus_' +str(modulus )+'_logcovolume' +str(log_covolume) 					
+   
+[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE.sobj')
 stdev = 0.01
+
+print('is_LWE', '| ', ' rank ', ' | ', ' modulus ', ' | ', ' log_covolume ', ' | ', ' stdev ')
+print(is_LWE , '  |   ', rank ,'   |     ', modulus ,'   |      ', log_covolume , '        | ',stdev )
 
 D = DiscreteGaussian(stdev)
 # e = matrix(ZZ, [D() for _ in range(rank)]).transpose()
@@ -26,5 +30,7 @@ if is_LWE :
 		# A_big = [ [Id ] , [A] ]  
 		# A_big * s + e = s_0 + e_0 		, A s_1 + e_1
 		# B * s + e 	= s_0 + A * s_1 + e_0 	, q s_1 + e_1
-		
-save( ( target_list_LWE , target_list_unif) , 'Target_samples/target_samples' )		
+
+# Save to folder
+file_path = 'Target_samples/target_samples_isLWE_' + str(is_LWE)+'_stdev_' +str(stdev )+'_rank_' +str(rank )+'_modulus_' +str(modulus )+'_logcovolume' +str(log_covolume) 					
+save( ( target_list_LWE , target_list_unif) , file_path)		

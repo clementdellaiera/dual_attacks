@@ -9,6 +9,7 @@ is_LWE = True
 
 T = 1000 				# Size of target samples
 
-
-FPLLL.set_random_seed(1337)		# Seed set for reproducibility of experiments
+# Seeds
+seed_FPLLL = 1337
+FPLLL.set_random_seed(seed_FPLLL)		# Seed set for reproducibility of experiments
 
