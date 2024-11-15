@@ -76,7 +76,7 @@ modulus = int(modulus)
 ##   Conversion to cupy array   ##
 ##################################
 
-number_bound = 10000 		# Number of samples of dual short vectors used
+number_bound = 1000 		# Number of samples of dual short vectors used
 
 counter = time()
 W = cp.array(short_vector_list[0:number_bound]) 

@@ -202,7 +202,7 @@ A consequence of which is that every (for instance square-integrable) $\Lambda$-
 \[\mathcal F^{*}(\psi)(t) = \sum_{w\in\Lambda^\vee} \psi_w \exp(2i\pi \langle w,t \rangle) . \]
 
 \subsection{Poisson formula}
-The Fourier transformation 
+The Fourier transform
 \[\mathcal F(\varphi ) (\xi ) = \int_V \varphi(v)e^{-2i\pi \xi(x)} dm(v) \quad\forall \xi \in V^\vee.\]
 induces an isomorphism of topological vector spaces
 \[\mathcal F : \mathcal S(V) \rightarrow \mathcal S(V^\vee)\]
@@ -217,6 +217,37 @@ For the gaussian function $\rho_s(t) = \exp(-s\pi\|t\|^2)$,
 \[\mathcal F(\rho_s)(\xi)= s^{-n/2}\exp(-s^{-1}\pi\|\xi\|^2 ),\]
 which yields the classical identity\footnote{$\Theta_{\Lambda}(s) = \rho_s(\Lambda)$.} for thêta functions
 \[ \Theta_{\Lambda}(s) = covol(\Lambda)^{-1}s^{-n/2}\Theta_{\Lambda^\vee}(s^{-1}).\]
+
+\subsection{Kernels and Fourier transforms on lattices}
+
+Another version of the Fourier transform acts on $\ell^1$ functions. For every abelian discrete group $G$, let 
+\[\ell^1(G) = \{ f : G \rightarrow \mathbb C \ :\ \sum_{g\in G}|f(g)| < \infty \}.\]
+Endowed with the convolution product and the $\ell^1$-norm, it is a commutative involutive complex Banach algebra, on which the Gelfand transform coincides with the Fourier transform, and yields an injective continuous morphism $\ell^1(G)\hookrightarrow C(\hat G)$. 
+
+In the case of (dual of) lattices, we get
+\[\mathcal F : \left\{ \begin{array}{rcl}
+\ell^1(\Lambda^\vee) & \rightarrow &  C(\mathbb R^n / \Lambda) \\
+\eta & \mapsto & \hat \eta : t \mapsto \sum_{w\in \Lambda^\vee} \eta(w) e^{2i\pi \langle w , t\rangle} \\ 
+\end{array}\right.\]
+
+The restriction of $\mathcal F$ to the subset of probability measures
+\[\text{Prob}(\Lambda^\vee) =\{\eta\in\ell^1(\Lambda^\vee) \ :\ \eta(w)\geq 0 \text{ and } \sum_{w\in \Lambda^\vee} \eta(w) = 1\}  \]
+is the characteristic function, i.e. for every $\eta\in\text{Prob} (\Lambda^\vee)$, if $W$ is a random variable distributed according to $\eta$, 
+\[\mathcal F(\eta)(t) = \mathbb E[e^{2i\pi \langle W , t\rangle } ]\quad\forall t\in \mathbb R^n.\] 
+By Bochner theorem, $\mathcal F(\text{Prob} (\Lambda^\vee))$ is the set of normalized continuous kernels of positive types on $\mathbb R^n / \Lambda$.
+
+We can summarized the discussion above by the following theorem.
+
+\begin{theorem}
+For every continuous $\Lambda$-periodic function $f : \mathbb R^n \rightarrow \mathbb C$ of positive type such that $f(0) = 1$, there exists a probability measure $\eta\in \text{Prob} (\Lambda^\vee)$ such that 
+\[f(t) =\mathbb E[e^{2i\pi \langle W , t\rangle } ]\quad\forall t\in \mathbb R^n ,\]
+where $W$ is a random variable with law $\eta$.
+\end{theorem}
+
+The function 
+\[f(t) = \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\]
+is such a kernel, and is thus in the image of the Fourier transform. We can actually determine it analytically using the Fourier transform of the gaussian function and the Poisson formula : $f = \mathcal F(\eta) $ for 
+\[\eta(w) = \frac{\rho_{\frac{1}{s}} (\|w\|^2)}{\rho_s(\Lambda) \det(\Lambda)} \quad\forall w\in \Lambda^\vee.\] 
 
 
 \subsection{Congruence lattices}
