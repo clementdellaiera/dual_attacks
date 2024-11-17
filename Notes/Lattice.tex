@@ -218,27 +218,34 @@ For the gaussian function $\rho_s(t) = \exp(-s\pi\|t\|^2)$,
 which yields the classical identity\footnote{$\Theta_{\Lambda}(s) = \rho_s(\Lambda)$.} for thêta functions
 \[ \Theta_{\Lambda}(s) = covol(\Lambda)^{-1}s^{-n/2}\Theta_{\Lambda^\vee}(s^{-1}).\]
 
-\subsection{Kernels and Fourier transforms on lattices}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Kernels and Fourier transforms on lattices} %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Another version of the Fourier transform acts on $\ell^1$ functions. For every abelian discrete group $G$, let 
+%Another version of the Fourier transform acts on $\ell^1$ functions. 
+For every abelian discrete group $G$, let 
 \[\ell^1(G) = \{ f : G \rightarrow \mathbb C \ :\ \sum_{g\in G}|f(g)| < \infty \}.\]
-Endowed with the convolution product and the $\ell^1$-norm, it is a commutative involutive complex Banach algebra, on which the Gelfand transform coincides with the Fourier transform, and yields an injective continuous morphism $\ell^1(G)\hookrightarrow C(\hat G)$. 
-
-In the case of (dual of) lattices, we get
-\[\mathcal F : \left\{ \begin{array}{rcl}
+Endowed with the convolution product and the $\ell^1$-norm, it is a commutative involutive complex Banach algebra. Its Pontryagin dual $\hat G$ is the group of homomorphisms $\chi : G\rightarrow \mathbb S^1$, i.e.
+\[\chi(e_G ) = 1 \text{ and } \chi(st) = \chi(s)\chi(t) \quad \forall s,t \in G,\]
+endowed with the topology of uniform convergence on compact subsets. As $G$ is discrete, $\hat G$ is compact. Let us denote by CP$(\hat G)$ the space of continuous normalized functions of positive types on $\hat G$, i.e. functions $f : \hat G \rightarrow \mathbb C$ such that $f(0) = 1$ and for every real numbers $a_1,\ldots , a_n$ and every elements $g_1,\ldots , g_n$ in $G$, the following inequality is satisfied :
+\[\sum_{i=1}^n a_i a_j f(g_ig_j^{-1})\geq 0.\] 
+ 
+The Gelfand transform on $\ell^1(G)$ coincides with the Fourier transform on $G$, and yields an injective continuous morphism $\mathfrak F : \ell^1(G)\hookrightarrow C(\hat G)$. In the case of (dual of) lattices, we get
+\[\mathfrak F : \left\{ \begin{array}{rcl}
 \ell^1(\Lambda^\vee) & \rightarrow &  C(\mathbb R^n / \Lambda) \\
 \eta & \mapsto & \hat \eta : t \mapsto \sum_{w\in \Lambda^\vee} \eta(w) e^{2i\pi \langle w , t\rangle} \\ 
 \end{array}\right.\]
 
-The restriction of $\mathcal F$ to the subset of probability measures
+The restriction of $\mathfrak F$ to the subset of probability measures
 \[\text{Prob}(\Lambda^\vee) =\{\eta\in\ell^1(\Lambda^\vee) \ :\ \eta(w)\geq 0 \text{ and } \sum_{w\in \Lambda^\vee} \eta(w) = 1\}  \]
 is the characteristic function, i.e. for every $\eta\in\text{Prob} (\Lambda^\vee)$, if $W$ is a random variable distributed according to $\eta$, 
-\[\mathcal F(\eta)(t) = \mathbb E[e^{2i\pi \langle W , t\rangle } ]\quad\forall t\in \mathbb R^n.\] 
-By Bochner theorem, $\mathcal F(\text{Prob} (\Lambda^\vee))$ is the set of normalized continuous kernels of positive types on $\mathbb R^n / \Lambda$.
+\[\mathfrak F(\eta)(t) = \mathbb E[e^{2i\pi \langle W , t\rangle } ]\quad\forall t\in \mathbb R^n.\] 
+By Bochner theorem, $\mathfrak F(\text{Prob} (\Lambda^\vee))$ is the set of normalized continuous kernels of positive types on $\mathbb R^n / \Lambda$. Thus we get a continuous isomorphism 
+\[\mathfrak F : \text{Prob}(\Lambda^\vee ) \rightarrow \text{CP}(\mathbb R^n / \Lambda).\]
 
 We can summarized the discussion above by the following theorem.
 
-\begin{theorem}
+\begin{theorem}[Bochner theorem for euclidean lattices]
 For every continuous $\Lambda$-periodic function $f : \mathbb R^n \rightarrow \mathbb C$ of positive type such that $f(0) = 1$, there exists a probability measure $\eta\in \text{Prob} (\Lambda^\vee)$ such that 
 \[f(t) =\mathbb E[e^{2i\pi \langle W , t\rangle } ]\quad\forall t\in \mathbb R^n ,\]
 where $W$ is a random variable with law $\eta$.
@@ -246,11 +253,26 @@ where $W$ is a random variable with law $\eta$.
 
 The function 
 \[f(t) = \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\]
-is such a kernel, and is thus in the image of the Fourier transform. We can actually determine it analytically using the Fourier transform of the gaussian function and the Poisson formula : $f = \mathcal F(\eta) $ for 
-\[\eta(w) = \frac{\rho_{\frac{1}{s}} (\|w\|^2)}{\rho_s(\Lambda) \det(\Lambda)} \quad\forall w\in \Lambda^\vee.\] 
+is such a kernel, and is thus in the image of the Fourier transform. Using the Poisson formula applied to the discrete gaussian function, we get 
+%We can actually determine it analytically using  the Fourier transform of the gaussian function and the Poisson formula : $f = \mathcal F(\eta) $ for 
+%\[\eta(w) = \frac{\rho_{\frac{1}{s}} (\|w\|^2)}{\rho_s(\Lambda) \det(\Lambda)} \quad\forall w\in \Lambda^\vee.\] 
+\[\begin{split} 
+f(t) & = \frac{ \rho_s (\Lambda + t)}{\rho_s (\Lambda )} \\ 
+	& = \frac{ ( \rho_{s^{-1}} e^{2i\pi \langle \bullet , t\rangle }) (\Lambda^\vee) }{ \rho_{s^{-1}}(\Lambda^\vee)} \\
+	& = \rho_{s^{-1}}(\Lambda^\vee)^{-1}\sum_{w\in \Lambda^\vee} \rho_{s^{-1}}(w) \cos (2\pi \langle w,t\rangle ) .
+\end{split}\]
+This ensures that if $W$ is a random variable following $D_{\Lambda^\vee, s^{-1}}$, then 
+\[f(t) = \mathbb E[\cos (2\pi \langle W , t \rangle ) ] \quad \forall t\in \mathbb R^n.\] 
 
+Let $W_1,\ldots , W_N$ be i.i.d random variables with law $D_{\Lambda^\vee, s^{-1}}$. The random variables $\cos (2\pi \langle W , t \rangle ) $ are bounded. 
+Let us denote $\frac{1}{N}\sum_{k=1}^N \cos (2\pi \langle W_k , t \rangle )$ by $g_N(t)$. Then , by Chebyshev inequality,
+\[\mathbb P( |g_N(t) - f(t) |\geq \varepsilon ) \leq  2 \exp( - \frac{2\varepsilon^2}{4N}) \quad \forall \varepsilon >0.\]
 
-\subsection{Congruence lattices}
+The provable regime of Pouly-Shen follows from the properties of $\frac{ \rho_s (\Lambda + t)}{\rho_s (\Lambda )}$ as a distinguisher, which highly depends on $s$. This analysis breaks down if we consider $W_1,\ldots , W_N$ sampled from a sieve (and not sampled as independent draws of $D_{\Lambda,s^{-1}}$). However, most papers (including \cite{ducas2023accurate}) assume that the output of a sieve is a sample of independent variables distributed as a uniform random variable on a Euclidean ball. In that case, the distinguisher can be computed as $f(t) = \mathbb E[e^{2i\pi\langle W , t \rangle} )]$ for $W\sim \mathcal U(B_n(r_{\text{sat}} \mathfrak{gh}_n))$ and approximated with a sample of size $N = \frac{1}{2}f_{\text{sat}}r_{\text{sat}} $ (see heuristic 2 of \cite{ducas2023accurate}, page 7).    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Congruence lattices} %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 A congruence lattice\footnote{The accepted terminology in the computer science community is $q$-ary.} is a lattice $\Lambda$ of $\mathbb R^n$ such that 
 \[q\mathbb Z^n < \Lambda < \mathbb Z^n,\]
 for some positive integer $q$, called the modulus. When useful, we will use the term $q$-congruence lattice if we want to make the modulus explicit.
