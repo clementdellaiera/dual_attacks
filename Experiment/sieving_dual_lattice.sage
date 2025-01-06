@@ -4,6 +4,9 @@ from g6k import Siever
 from time import time
 import sys
 
+from tqdm import tqdm
+from multiprocessing import Pool
+
 FPLLL.set_random_seed(1337)		# Seed set for reproducibility of experiments
 
 
@@ -17,7 +20,7 @@ log_covolume = rank // 2			# log_covolume = k = n-m | IntegerMatrix takes for qa
 
 # Instance generation
 B = IntegerMatrix.random( rank , 'qary' , k = log_covolume , q = modulus)
-
+print("B : [OK]")
 
 start = time()
 ## Basis of dual/perpendicular lattice
@@ -32,6 +35,7 @@ If B = [[I_m | A ] , [0 | q I_k]] , then
 B_perp = block_matrix( [ [modulus * matrix.identity(ZZ,m) , matrix.zero(ZZ ,m , log_covolume )] , [ - A.transpose() , matrix.identity(ZZ , log_covolume)] ] )
 B_perp = IntegerMatrix.from_matrix(B_perp)
 
+print("B_perp : [OK]")
 
 ###############################################################
 ##     Dual short vectors of dual/perp lattice via sieve     ##
@@ -41,44 +45,90 @@ short_vector_list = []
 	
 g6k = Siever(B_perp)
 g6k.lll(0,rank)
+print("LLL(B_perp) : [OK]")
+print(g6k.params.saturation_radius,g6k.params.saturation_ratio,g6k.params.db_size_base, g6k.params.db_size_factor)
 
 g6k.initialize_local(0, rank /2, rank)
 while g6k.l > 0:
+    _start = time()
     # Extend the lift context to the left
     g6k.extend_left(1)
     # Sieve
-    g6k()
+    g6k(alg="gauss" if g6k.n<50 else "hk3")
+    _duration = time() - _start
+    print("Progressive sieving : dim={} in {:.4f} sec".format(g6k.n, _duration))
 
-with g6k.temp_params(saturation_ratio=.95, saturation_radius=1.7, 
-                     db_size_base=sqrt(1.7), db_size_factor=5):
-    g6k()
+
+sat_radius = float(sys.argv[3])
+sat_ratio = .9
+with g6k.temp_params(saturation_ratio=sat_ratio, saturation_radius=sat_radius, 
+                     db_size_base=sqrt(2), db_size_factor=5):
+    _start = time()
+    g6k(alg="gauss" if g6k.n<50 else "hk3")
+    _duration = time() - _start
+    print("Final sieving : dim={} in {:.4f} sec".format(g6k.n, _duration))
 
 # Convert all data_base vectors from basis A to cannonical basis and print them 
 # out if they are indeed shorter than 1.7 * gh^2
-
+print("Conversion dans la base canonique...")
 gh = gaussian_heuristic([g6k.M.get_r(i, i) for i in range(rank)])
 
 data_base = list(g6k.itervalues())
-found = 0
+print("db_size = {}".format(len(data_base)))
 
 
 
-file_name = '/local/opt/tuonguye/Dual_short_vectors/dual_short_vectors_{}_{}.txt'.format(sys.argv[1], sys.argv[2])
-with open(file_name, "w") as f:
-            f.close()
-for x in data_base:
+from itertools import islice
+# Define a function to yield chunks of a specified size from an iterable
+def chunks(iterable, size):
+    # Create an iterator from the input iterable
+    iterator = iter(iterable)   
+    # Loop over the iterator, taking the first element in each iteration
+    for first in iterator:
+        # Yield a list consisting of the first element and the next 'size-1' elements from the iterator
+        yield [first] + list(islice(iterator, size - 1))
+
+# # Exemple sur la liste suivante
+# my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+# # Convert the generator returned by the chunks function into a list of chunks
+# chunked_list = list(chunks(my_list, 10))
+# print(chunked_list)
+## on trouve : [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
+
+
+
+def sauvegarde(x):
+    res = []
     v = B_perp.multiply_left(x)
     l = sum(v_**2 for v_ in v)
-    if l < 1.7 * gh:
-        # print(l/gh, v)
-        found += 1
-        # short_vector_list.append(v)
-        with open(file_name, "a") as f:
-            f.write(str(v) + '\n')
+    if l < sat_radius * gh:
+        res.append(v)
+    return res
 
 
-print("Found %d vectors of squared length than 1.7*gh. (expected %f)"%(found, .5 * 1.7**(rank /2.)))
-print('Execution time : ', time() - start , ' sec.')
+print("Ecriture dans le fichier de sauvegarde ...")
+_start = time()
+chunked_db = list(chunks(data_base, 1000000))
+nb_cpu = int(sys.argv[4])
+res = []
+
+for db in tqdm(chunked_db):
+    pool = Pool(nb_cpu)
+    short_vector_list = pool.map(sauvegarde, db)
+    short_vector_list = [ent for sublist in short_vector_list for ent in sublist]
+    pool.close()
+    res += short_vector_list
+
+
+# file_name = '/local/opt/tuonguye/Dual_short_vectors/dual_short_vectors_{}_{}.txt'.format(sys.argv[1], sys.argv[2])
+# with open(file_name, "w") as f:
+#     f.write(str(res))
+# _duration = time() - _start
+# print("Ecriture dans le fichier de sauvegarde : [OK] en {:.4f} sec".format(_duration))
+
+
+print("Found %d vectors (%.2f%%) of squared length less than %.2f*gh. (expected %f)"%(len(res), len(res)/len(data_base)*100, sat_radius, sat_ratio * .5 * sat_radius**(rank /2.)))
+print('Execution time : {:.4f} sec'.format(time() - start))
 
 
 
