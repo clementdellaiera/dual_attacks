@@ -31,6 +31,8 @@ Pour Clémence,
 
 (3) Un exemple peut-être intéressant : on se donne un réseau $\Lambda_0$ sur lequel BDD est facile à résoudre, et on génère un sur-réseau $\Lambda$ d'indice fini aléatoirement\footnote{Par exemple, on génère aléatoirement une suite d'entiers $d_k$ qui se divisent successivement et on prend pour base de $\Lambda$ une base de $\Lambda_0$ multipliée par $diag(d_k)$ cf section 3.2 de \cite{DucasPulles}.}. On applique alors l'attaque généralisée de Ducas-Pulles. Par exemple si le quotient $G$ est un code aléatoire difficile, est ce que BDD sur $\Lambda$ est aussi fort que le décodage par syndrome sur $G$?
 
+Cela serait bien d'avoir des tests sur des protocoles soumis au NIST (comme dans MATZOV - Table 2).
+
 \section{Revue de la littérature}
 
 \subsection{Laarhoven Walter (2021)}
@@ -47,6 +49,40 @@ Computation of the statistical distance between the probability distributions of
 
 \subsection{Matzov (2022)}
 
+Voir la discussion \html{https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/Fm4cDfsx65s}.
+
+Complexité de la transformée de Fourier : pour $f : (\mathbb Z/q\mathbb Z )^n \rightarrow \mathbb C $ , évaluer l'ensemble des $q^n$ valeurs de $\hat f$, définie par  
+\[\hat f (w) = \sum_{v} e^{\frac{2i\pi}{q}\langle w,v\rangle } f(v),\]
+coûte $O(nq^n)$ opérations via l'algorithme de la FFT.
+
+Modèle de complexité pour BKZ
+\begin{itemize} 
+\item La base $B$ satisfait à l'hypothèse GSA, i.e.
+\[\frac{ \|b_{i}^*\| }{\|b_{i+1}^*\|} = \delta(\beta) \simeq (\frac{\beta}{2\pi e}(\pi\beta)^{\frac{1}{\beta}} )^{\frac{1}{\beta-1}},\]
+ce qui ne s'obitent en général qu'après plusieurs itération de BKZ.
+\end{itemize}
+
+Etape 1 - Génération de vecteurs courts dans le réseau dual
+
+Comme l'on ne cherche pas à avoir le vecteur le plus court de $\Lambda^\vee$, on peut relaxer le crible (et ne pas utiliser la version la plus coûteuse de BKZ). Pour cela, les auteurs utilisent les techniques de 'dimensions for free' (voir \cite{ducas2018shortest}). 
+
+Etape 2 - FFT
+\[b = As +e = A_1 s_1 + A_2 s_2 + e , w_j = (u_j , v_j)\]
+
+
+
+\[\begin{split}
+\sum_{j} e^{\frac{2i\pi}{q}\langle u_j , b - A_1\tilde{s_1} \rangle} 
+	& = \sum_j e^{\frac{2i\pi}{q}\langle u_j , b\rangle }e^{ - \frac{2i\pi}{q}\langle u_j ,A_1\tilde{s_1} \rangle}\\
+	& = \\
+\end{split}\]
+
+Etape 3 - 
+
+Remarque sur le modulus switching : au début de la section 8, page 20, de \cite{carrier2024reduction} : "modulus switching technique used in [MAT22] can be viewed as a suboptimal
+source distortion code for the Euclidean metric which can be replaced by an almost optimal polar code."
+Aussi : "Krawtchouk polynomials as the Fourier transform of the indicator function of a Hamming sphere" ; i.e. si $\mathcal E_t = \{x \in \mathbb F_2^n\ : \ |x|_{h} = t\}$, 
+\[K_{t,n}(|x|_h)  = \hat{1_{\mathcal E_t}} (w) = \sum_{x\in \mathcal E_t} (-1)^{\langle w,x \rangle}.\]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Ducas Pulles (2023)}%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

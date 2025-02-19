@@ -3,7 +3,7 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amsthm}
-
+\usepackage{xcolor}
 %\usepackage{nicematrix}
 
 \setlength\parindent{0pt} %no indentation for paragraph
@@ -11,6 +11,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}[theorem] 
 \newtheorem{lemma}{Lemma}
 
 \title{Lattice based cryptography}
@@ -93,9 +94,11 @@ For every continuous $\Lambda$-periodic function $f : \mathbb R^n \rightarrow \m
 where $W$ is a random variable with law $\eta$.
 \end{theorem}
 
-The function 
+\subsubsection{Gaussian sampling of short dual vectors}
+By theroem \ref{BochnerLattices}, the function 
 \[f(t) = \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\]
-is such a kernel, and is thus in the image of the Fourier transform. Using the Poisson formula applied to the discrete gaussian function, we get 
+is in the image of the Fourier transform. Using the Poisson formula applied to the discrete gaussian function, we get 
+%is such a kernel, and 
 %We can actually determine ita analytically using  the Fourier transform of the gaussian function and the Poisson formula : $f = \mathcal F(\eta) $ for 
 %\[\eta(w) = \frac{\rho_{\frac{1}{s}} (\|w\|^2)}{\rho_s(\Lambda) \det(\Lambda)} \quad\forall w\in \Lambda^\vee.\] 
 \[\begin{split} 
@@ -112,7 +115,47 @@ Let us denote $\frac{1}{N}\sum_{k=1}^N \cos (2\pi \langle W_k , t \rangle )$ by 
 
 The provable regime of Pouly-Shen follows from the properties of $\frac{ \rho_s (\Lambda + t)}{\rho_s (\Lambda )}$ as a distinguisher, which highly depends on $s$. This analysis breaks down if we consider $W_1,\ldots , W_N$ sampled from a sieve (and not sampled as independent draws of $D_{\Lambda,s^{-1}}$). 
 
-However, most papers (including \cite{ducas2023accurate}) assume that the output of a sieve is a sample of independent variables distributed as a uniform random variable on a Euclidean ball. In that case, the distinguisher can be computed as $f(t) = \mathbb E[e^{2i\pi\langle W , t \rangle} )]$ for $W\sim \mathcal U(B_n(r_{\text{sat}} \mathfrak{gh}_n))$ and approximated with a sample of size $N = \frac{1}{2}f_{\text{sat}}r_{\text{sat}} $ (see heuristic 2 of \cite{ducas2023accurate}, page 7). It remains to study if the behavious of $f(t)$ with respect to the distance. One reason for optimism is that gaussians in high dimensions are concentrated on spheres, thus I would expect the behaviours to be close.    
+However, most papers (including \cite{ducas2023accurate}) assume that the output of a sieve is a sample of independent variables distributed as a uniform random variable on a Euclidean ball. In that case, the distinguisher can be computed as $f(t) = \mathbb E[e^{2i\pi\langle W , t \rangle} )]$ for $W\sim \mathcal U(B_n(r_{\text{sat}} \mathfrak{gh}_n))$ and approximated with a sample of size $N = \frac{1}{2}f_{\text{sat}}r_{\text{sat}} $ (see heuristic 2 of \cite{ducas2023accurate}, page 7). It remains to study if the behavious of $f(t)$ with respect to the distance. One reason for optimism is that gaussians in high dimensions are concentrated on spheres, thus I would expect the behaviours to be close. 
+
+\textcolor{blue}{The computation of the Fourier transform of the characteristic function of a ball is a classical result. In \cite{ducas2023accurate} (see lemma 2 page 9) and \cite{carrier2024reduction} (see proposition 7), authors actually use it  }   
+
+We can summarize the discussion above by the following.
+
+\begin{corollary}
+Let $W_1,\ldots , W_N$ be a independent identically distributed random vector distributed as $D_{\Lambda^\vee , s^{-1}}$ and 
+\[g_N(t) = \sum_{k=1}^N\cos(2\pi \langle W_k,t\rangle )\quad\forall t\in\mathbb R^n.\] 
+Then 
+\[\mathbb P( |g_N(t) - \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}) |\geq \varepsilon ) \leq  2 \exp( - \frac{2\varepsilon^2}{4N}) \quad \forall \varepsilon >0.\]
+\end{corollary}
+
+In order to relate this result to solving CVP, we can use the following inequality (see \cite{banaszczyk1993new}) 
+\[ e^{-s\pi d(t,\Lambda)^2} \leq \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\leq 1 \]
+\begin{proof}(from \cite{stephens2017gaussian}, lemma 1.3.10)
+Up to translating by element of $\Lambda$, we can suppose that $t$ is in the Voronoi fundamental domain, i.e. $d(t,\Lambda) = \|t\|$, and thus $\rho_s(t)= e^{-s\pi d(t,\Lambda)^2}$. Then 
+\[\begin{split}
+\rho_s(\Lambda - t ) &= \frac{1}{2}\sum_{v\in \Lambda} ( \rho_s(v-t) + \rho_s(-v-t)) \\
+	& = \rho_s(t) \sum_{v\in \Lambda}\rho_s(v) \text{cosh}(2s\pi\langle v,t\rangle)\\
+	& \geq  \rho_s(t)\rho_s(\Lambda) \\ 
+\end{split}\]
+\end{proof}
+
+\subsubsection{Sampling of short dual vectors via sieving}
+
+For $B\in GL(d,\mathbb R)$, let $b_1$ be $B$'s first column and let us denote $\frac{\|b_1\|}{\text{det}(B)^{1/d}}$ as $\delta_B$.\\
+
+On input a basis $B$ of a lattice $\Lambda$, BKZ$_\beta$ with a sieving oracle as SVP oracle outputs vectors that can be modeled as one of the following :
+\begin{itemize}
+\item[$\bullet$] $N = \frac{1}{2}f_{sat}r_{sat}^n$ independant uniform random variables on a ball of radius $r_{sat} \mathfrak{gh}_n$, where $r_{sat}\geq 1$ is the saturation radius, and $f_{sat}\in (0,1]$ is the saturation ratio (see Heuristic 2 of \cite{ducas2023accurate}).
+\item[$\bullet$] independant uniform random variables on $\Lambda^\vee \cap \{t\in \mathbb R^d : R-\varepsilon\leq \|x\| \leq R+\varepsilon\}$ (see section of \cite{carrier2024reduction}). 
+\item[$\bullet$] independant (continuous) normal variables $\mathcal N(0,R I_d)$ (assumption 21 and 23 of \cite{espitau2020dual}). 
+\end{itemize}
+where $R = \delta_B^d det(\Lambda)^{1/d} / \sqrt{d}$. \\
+
+As models, all these heuristics are approximately the same. Indeed, in high dimensions, gaussian vectors are concentrated on a sphere (the same holds for uniform vectors on a euclidean ball). This comes from the fact that coordinates are sub-gaussian, thus their norms are sub-exponential, and these families of probabilities satisfy an inequality of the type 
+\[\mathbb P(| \|X\|_2 - \sigma \sqrt{d} |> t  ) \leq 2\exp(-ct^2)\quad \forall t>0\]
+for some constant $c>0$. See chapter 3 of \cite{vershynin2018high} (section 3.4). \\
+   
+\textcolor{blue}{A remark : it is surprising that the result of a sieve should be isotropic. If a lattice is sampled at random, there is no prefered direction and the general shape of a reduced basis should be isotropic (this is an argument I have read somewhere)\footnote{Shouldn't this contradict the Geometric Series Assumption.}. However, conditionnal to the choice of a lattice, there should be some distortion. I would expect that the distribution $\mathcal N(0,\Sigma)$, where $\Sigma = B^*B$ for a reduced basis, would be relevant since it captures the shape of the lattice (the unit ball is sent to the ellipsoid with axes corresponding to the vectors of the basis). }
 
 \subsubsection{Analogy with codes}
 
@@ -238,13 +281,13 @@ For every $f\in C_c(\mathcal L_{n,1})$
 
 This result allows to approximate the Haar-Siegel probability measure by the measure obtained by fixing a big integer $N$, drawing uniformly a random element of the finite set $\mathfrak H_N$, then renormalizing by $N^{-\frac{1}{n}}$.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Relative BDD}%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Relative versions of computational problems}%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Let $G$ be a locally compact abelian group endowed with a metric $d : G\times G \rightarrow \mathbb R$, $H$ a finitely generated subgroup and $\mu$ a probability measure on $G/H$. Define the following problem
-$$\mathcal P (G,H,\mu) : \text{Given } x \text{ s.t. }x+H \sim \mu , \text{ find argmin}_{a\in H} d(x,a).$$
-
+Let $G$ be a locally compact abelian group endowed with a metric $d : G\times G \rightarrow \mathbb R$, $H$ a finitely generated subgroup and $\mu$ a probability measure on $G/H$, $\eta$ a probability measure on $G$. Define the following problem
+$$\mathcal P_{\text{search}} (G,\mu) : \text{Given } (H,x) \text{ s.t. }x+H \sim \mu , \text{ find argmin}_{a\in H} d(x,a).$$
+$$\mathcal P_{\text{decision}}(G,\eta) : \text{Given } (H,t) \text{ where } t\in G, \text{ decide if } t + H \sim \mathcal U(G/H) \text{ vs } t\sim D$$
 In particular instances, this problem specializes to well studied problems. The generalization is motivated to highlight some subtle points : it can happen that one has to deal with codes while starting with a problem related to lattices. For example, this phenomenon arises in LWE because the quotient of the LWE lattice $\Lambda_q(A)$ by $q\mathbb Z^n$ is not a lattice but a finite group. 
 \[\begin{array}{|c|c|c| c | c|} 
 \hline
