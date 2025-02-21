@@ -95,7 +95,7 @@ where $W$ is a random variable with law $\eta$.
 \end{theorem}
 
 \subsubsection{Gaussian sampling of short dual vectors}
-By theroem \ref{BochnerLattices}, the function 
+By theorem \ref{BochnerLattices}, the function 
 \[f(t) = \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\]
 is in the image of the Fourier transform. Using the Poisson formula applied to the discrete gaussian function, we get 
 %is such a kernel, and 
@@ -157,6 +157,20 @@ for some constant $c>0$. See chapter 3 of \cite{vershynin2018high} (section 3.4)
    
 \textcolor{blue}{A remark : it is surprising that the result of a sieve should be isotropic. If a lattice is sampled at random, there is no prefered direction and the general shape of a reduced basis should be isotropic (this is an argument I have read somewhere)\footnote{Shouldn't this contradict the Geometric Series Assumption.}. However, conditionnal to the choice of a lattice, there should be some distortion. I would expect that the distribution $\mathcal N(0,\Sigma)$, where $\Sigma = B^*B$ for a reduced basis, would be relevant since it captures the shape of the lattice (the unit ball is sent to the ellipsoid with axes corresponding to the vectors of the basis). }
 
+The output of a sieve is modelled by a variety of distributions, which all have in common that they are sub-gaussian and thus are concentrated on a sphere. It is not crucial to know the exact distribution of the output as long as one can efficiently bound the constant in the inequality
+\[\mathbb P(| \ \|\xi\| - r\sqrt{d} \ | \geq t) \leq C\exp(-ct^2).\]
+Indeed, this allows to derive an success probability for the attack. 
+
+\textcolor{blue}{It might be doable to model the sieve as a random process, such as a Markov chains, that stays sub-gaussian. The discussion above then gives a way to freee oneself from the choice of a particular distribution as the output as the sieve, as long as it is sub-gaussian.}
+
+Déterminer $C,c> 0$ tels que:
+\begin{corollary}
+Let $P$ a probability distribution on $\Lambda^\vee$ that is sub-exponential. Let $W_1,\ldots , W_N$ be a independent identically distributed random vector sampled via $P$ and 
+\[g_N(t) = \sum_{k=1}^N\cos(2\pi \langle W_k,t\rangle )\quad\forall t\in\mathbb R^n.\] 
+Then 
+\[\mathbb P( |g_N(t) - \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}) |\geq \varepsilon ) \leq  C \exp( - c\varepsilon^2) \quad \forall \varepsilon >0.\]
+\end{corollary}
+en montrant que $\mathbb Eg_N(t) $ devrait être proche de $\frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)})$ par approximation gaussienne (obtenue par concentration de la norme).
 \subsubsection{Analogy with codes}
 
 For $\mathbb F_q$, where $q = p^\ell$, recall (see corollary 7.1.3 of \cite{scarabotti2018discrete}) that $\mathbb F_q$ and its dual are isomorphic as groups via the following isomorphism 

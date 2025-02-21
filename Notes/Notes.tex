@@ -49,7 +49,7 @@ Computation of the statistical distance between the probability distributions of
 
 \subsection{Matzov (2022)}
 
-Voir la discussion \html{https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/Fm4cDfsx65s}.
+Voir la discussion \url{https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/Fm4cDfsx65s}.
 
 Complexité de la transformée de Fourier : pour $f : (\mathbb Z/q\mathbb Z )^n \rightarrow \mathbb C $ , évaluer l'ensemble des $q^n$ valeurs de $\hat f$, définie par  
 \[\hat f (w) = \sum_{v} e^{\frac{2i\pi}{q}\langle w,v\rangle } f(v),\]
@@ -177,6 +177,16 @@ $$ BDD = A_0 s_0 + e $$
 
 Calcul explicite de l'espérance et de la variance de $ cos( 2\pi \langle w , t\rangle )$ lorsque $t$ suit une loi uniforme $\mathcal U(\mathbb T_\Lambda)$ (on obtient $(0,\frac{1}{2})$) et si $t\sim \mathcal N_{\ell^2_n}(0 , \sigma^2 I_n) \pmod{\Lambda}$ (on obtient $(e^{-2\pi² \sigma^2 \|w\|^2} , \frac{1}{2} - \Theta(e^{-4\pi^2\sigma^2 \|w\|^2}))$.
 
+\subsection{Ducas Pulles - le retour (Accurate score prediction)}
+
+La fonction caractéristique de la loi uniforme sur une boule euclidienne s'exprime via une formule compliquée mais néanmoins classique faisant apparâitre les fonctions de Bessel du premier type. On a toujours une ingéalité de type Hoeffding qui borne la déviation de 
+\[\frac{1}{|W|}\sum_{w\in W}\cos (2\pi\langle w, t \rangle) - \mathbb E[e^{2i\pi \langle w, t \rangle }]\]
+même si ce n'est pas précisé. Je n'y ai pas encore vu de justification du lien entre la maximisation du score et decision-BDD.\\
+
+Page 11 : une explication à creuser sur le régime contradictoire.\\
+
+Independance heuristic : pour DP, cette 'hypothèse' ne s'applique pas toujours (elle est vérifiée pour le régime de Pouly-Shen $ \|e\|< \lambda_1 / 2$), et dans ces cas implique une sous-etimation de la probabilité qu'une target uniforme ait un score plus élevé qu'une target BDD. Il y a une confusion entre ce qui se passe dans l'attaque et la 'decision-BDD' qui est défini plus haut en 2.3 page 9. Notamment lors de la description de l'attaque, ils prétendent devoir résoudre decision-BDD sur un ensemble de target pour en déduire une solution $v$, là où decision-BDD ne répond qu'un booléen sur une seule entrée (problème de type). Pour moi, dans l'attaque, on résout BDD (search) sur $L/L_0$ où $L_0$ est la sparsification de $L_0$. 	 \\
+
 \subsection{Pouly Shen (2024)}
 
 Le papier étudie le distingueur dans le cas des réseaux associés au problème LWE, i.e. pour $A\in (\mathbb Z /q\mathbb Z )^{m\times n}$ avec $m\geq n$ et rang$(A)=n$,
@@ -237,7 +247,7 @@ Yixin ne voit pas les termes du score comme des variables aléatoires. L'idée e
  
 Les articles de ling et Wang (\cite{wang2017geometric} \cite{wang2019lattice}) détaille une méthode de sampling de gaussienne discrète sur les réseaux utilisant les méthodes de Monte-Carlo. Là où sampler par GPV donne un algorithme polynômial qui ne permet pas de descendre en dessous du smoothing parameter du réseau, la méthode basée sur le MCMC permet de le faire en étant une tout petit peu plus que polynômial.
  
-\subsection{Discussion avec Amaury et Yixin 12/07/2024}
+\subsubsection{Discussion avec Amaury et Yixin 12/07/2024}
  
 Une erreur de ma part : j'ai proposé que $\sum_{w \in\Lambda^\vee} \cos (2\pi\langle w, t\rangle ) $ soit le développement en séries de Fourier de $d(t,\Lambda)$. Après vérification, cela ne fonctionne pas déjà pour $\mathbb Z$ : $d(x,\mathbb Z)$ est le signal triangulaire, la fonction $1$-périodique qui vaut $t\mapsto t$ si $t\in [0,\frac{1}{2}]$ et $t\mapsto 1-t$ si $t\in [\frac{1}{2},1]$. Un calcul rapide donne
 \[d(t,\mathbb Z) = \frac{4}{\pi^2} \sum_{k }\frac{(-1)^k}{(2k+1)^2} \sin (2\pi (2k+1)t). \]
