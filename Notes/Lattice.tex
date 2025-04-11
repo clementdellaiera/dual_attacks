@@ -263,8 +263,9 @@ and a basis for $\mathcal L(A)^\perp$ is
 \]
 which, once multiplied by $q^{-1}$, gives a basis of $\mathcal L(A)^\vee$. We also have covol$(\mathcal L(A))=q^{k}$, covol$(\mathcal L(A)^\perp)=q^{m}$, and of course covol$(\mathcal L(A))^\vee=q^{-k}$ as expected.
 
-
-\subsection{Random euclidean lattices}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Random euclidean lattices} %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The map that sends a basis to the generated lattice yields a measurable model 
 \[\mathcal L_n \cong  GL(n,\mathbb R) / GL(n,\mathbb Z) \]
 for the space of lattices. Since $GL(n,\mathbb Z)$ is a lattice in $GL(n,\mathbb R)$, $\mathcal L_n$ admits a unique invariant probability measure $\mu_n$. In a similar manner, lattices of covolume $\rho$ admit an invariant probability measure from the model 
@@ -295,6 +296,15 @@ For every $f\in C_c(\mathcal L_{n,1})$
 
 This result allows to approximate the Haar-Siegel probability measure by the measure obtained by fixing a big integer $N$, drawing uniformly a random element of the finite set $\mathfrak H_N$, then renormalizing by $N^{-\frac{1}{n}}$.
 
+\subsubsection{Siegel's mean theorem}
+
+Siegel proved the following result. Generalizations are te be found elsewhere, see Schmidt, or Rogers, Macbeath  \cite{macbeath1958siegel}.
+Rogers paper \cite{rogers1955mean} contains a mistake for $n=2$ that was latter fixed in \cite{schmidt1960metrical}.
+
+\begin{theorem}[Siegel's mean value theorem \cite{siegel1945mean}]
+Let $L$ be a random lattice distributed according to the normalized Haar measure $\mu_{n,1}$. For every Lebesgue-integrable function $f\in L^1(\mathbb R^{n},\lambda)$,
+\[\mathbb E[\sum_{v\in L}f(v)] = \int_{\mathbb R^n}f(x) d\lambda(x).\]
+\end{theorem}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Relative versions of computational problems}%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
