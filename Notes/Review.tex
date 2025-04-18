@@ -1,0 +1,59 @@
+\documentclass{article}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{xcolor}
+%\usepackage{nicematrix}
+
+\setlength\parindent{0pt} %no indentation for paragraph
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}[theorem] 
+\newtheorem{lemma}{Lemma}
+
+\title{Review of the dual attack on euclidean lattices}
+\author{Clément Dell'Aiera - Tuong-Huy Nguyen}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%
+\maketitle
+Critics of the dual attack have focused their arguments on the following points :
+\begin{itemize}
+\item[$\bullet$] The independence of the summands in the distiguisher.
+\item[$\bullet$] The distribution of the output of a sieve.
+\item[$\bullet$] The contradictory regime that follows from numerical experiment. The attack could not work for some specific choices of parameters, choices that were determined experimentally.
+\end{itemize}
+
+\subsection{Independance}
+
+The independance heurisic refers to the following problem. Let $W\subset  \Lambda^\vee$ be a family of vectors and $t\in \mathbb R^n$, all of which are sampled from probability distributions. Even if we suppose that all vectors in $W$ are mututally independant, the random variables 
+\[\cos (\langle w ,t \rangle) \text{ for }w\in W\]
+are not. 
+
+This should in principle invalidate the use of Hoeffding inequality which requires the summands to be independant. But the bound obtained does not depend on the value of $t$, which by a simple conditionning allows us to still obtain the same bound. Indeed, $\cos (\langle w ,t \rangle)$ are independant conditionally to $t$, i.e. for every family of measurable subsets $\{A_w\}_{w\in W}$ of $\mathbb R$, we have
+\[ \mathbb P(\cap_{w\in W} \cos (\langle w ,t \rangle) \in A_w | t) =\prod_{w\in W} \mathbb P(\cos (\langle w ,t \rangle) \in A_w | t) .\] 
+In \cite{PoulyShen}, the use of Hoeffding inequaltiy ensures that
+\[\mathbb P(|g_w(t)-f(t)| > \varepsilon |t) \leq Ce^{-c\varepsilon^2}.\]
+Then 
+\[\begin{split}
+\mathbb P(|g_w(t)-f(t)| > \varepsilon ) & =\int \mathbb P(|g_w(t)-f(t)| > \varepsilon |t = t')\mathbb P_t(dt') \\
+		& \leq Ce^{-c\varepsilon^2}\\
+\end{split}\]
+Thus, we see that $g_w(t)$ concentrated around its mean value $f(t)$, even in the independance heuristic.
+
+\subsection{Output of a sieve}
+
+The distribution of vectors in $W$ also influence the validity of the distinguisher. Indeed, the analysis carried in \cite{PoulyShen} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
+\[f(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
+Using inequalities from the ,
+
+details about isotrpoy 
+
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+\end{document}
