@@ -92,3 +92,45 @@ a short one and get a false-positive. On the other hand, our algorithm and
 analysis is not statistical: for the vast majority of choices of A, all targets satisfy
 the bound unconditionally and we can safely look at all targets without the risk
 of any false-positive.
+
+
+
+et W = (w1, ... , wN ) ∈ L^⊥_q(A_dual)^N be sampled
+according to D_{L^⊥_q(A_dual),qs}.
+
+
+
+
+
+
+# [DP24]
+
+To be able to work with the output of a lattice sieve in our analysis, we will
+make a heuristic assumption about the distribution of the lattice vectors that a
+lattice sieve algorithm outputs.
+
+**Heuristic 2.** Given a unit-volume lattice Λ, the output distribution of a lattice
+sieve with a saturation radius of rsat ≥ 1 and a saturation ratio of fsat ∈ (0, 1],
+is a list of vectors W ⊂ R^n of size N = 1/2 f_sat r^n_sat, where its elements are inde-
+pendently sampled uniformly at random from the ball of radius r_sat GH(n).
+
+
+This heuristic makes two simplifications on the output of a lattice sieve.
+The first simplification made in the heuristic is that not much changes when
+going from a list of N vectors that are the output of a sieve, to a list of N
+vectors that are each sampled uniformly from Λ ∩ r_sat GH(n) B^n. Although the
+heuristic allows for duplicates, many distinct values will be sampled, which gives
+a motivation for this simplification. As an illustration, consider the following:
+sampling n times uniformly from a set of size n yields in expectation a set of
+size n(1 − 1/e) ≈ 0.63n as n → ∞.
+The second simplification is that the lattice structure W ⊂ Λ is ignored in
+the output. The Gaussian Heuristic predicts that the norm of the lattice vectors
+follows a similar distribution as the norm distribution of points uniformly from
+the ball. When running a sieve on a random lattice, this assumption seems fair,
+because we do not expect the lattice to be distorted in any particular direction.
+Note that this heuristic does not assume all vectors are of the same length
+r_sat √n, as done in e.g. [GJ21]. Instead the heuristic predicts there may be some
+shorter vectors w, albeit with smaller probability, but still most of the vectors
+are close to the boundary of the ball. The very short vectors are more beneficial
+in the dual attack than longer vectors, so the analysis will be more conservative
+when taking shorter vectors into account.
