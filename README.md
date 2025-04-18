@@ -2,9 +2,17 @@
 
 
 
+
+
+
+
+
+# [DP23]
+
+
 **Lemma 8.** Let Λ be a lattice of volume 1, and r > 0 such that r < λ1(Λ)
 2 GH(n) .
-Then, for a target t uniform in Rn/Λ, it holds with probability rn that t is at
+Then, for a target t uniform in R^n/Λ, it holds with probability rn that t is at
 distance at most r GH(n) from the lattice.
 
 Let us use this lemma in the case of a random lattice of volume 1, or more
