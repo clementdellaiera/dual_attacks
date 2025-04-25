@@ -47,13 +47,61 @@ Thus, we see that $g_w(t)$ concentrated around its mean value $f(t)$, even in th
 
 \subsection{Output of a sieve}
 
-The distribution of vectors in $W$ also influence the validity of the distinguisher. Indeed, the analysis carried in \cite{PoulyShen} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
+The distribution of vectors in $W$ also influence the validity of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
 \[f(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
-Using inequalities from the ,
+Using inequalities from the ,\\
 
-details about isotrpoy 
+details about isotropy \\
+
+In other works (\cite{carrier2024reduction}, \cite{ducas2023accurate}), the output of a sieve is modelled as a uniform distribution on either a euclidean ball or a thick sphere. In these cases, the computation of the distinguisher relies on classical harmonic analysis of radial function, i.e. decomposition of the characteristic function against spherical harmonics, given by Bessel functions.\\
+
+Let us describe more precisely the previous paragraph. Let $B^{(d)}(r)$ be the euclidean ball $\{x\in\mathbb R^d \ : \  \|x\|_2\leq r\}$ and $S^{(d)}(r,\delta)$ be the thick sphere 
+\[ B^{(d)}(r+\delta) \backslash B^{(d)}(r-\delta).\] 
+Then if $W\sim\mathcal U(B^{(d)}(r))$,
+\[\begin{split}
+f(t) & = \mathbb E[e^{i\langle W, t\rangle}] \\
+	& = \int_{\mathbb R^n} \chi_{B^{(d)}(r)}(x) e^{i\langle x, t\rangle}dx . \\
+\end{split}\]
+In the case where $\tilde W\sim\mathcal U(S^{(d)}(r,\delta))$, 
+\[\begin{split}
+\tilde f(t)  & = \mathbb E[e^{i\langle \tilde W, t\rangle}]\\
+	& =  \int_{\mathbb R^n} \chi_{B^{(d)}(r+\delta)}(x) e^{i\langle x, t\rangle}dx - \int_{\mathbb R^n} \chi_{B^{(d)}(r-\delta)}(x) e^{i\langle x, t\rangle}dx. \\
+\end{split}\]
+
+    
 
 
 \bibliographystyle{plain}
 \bibliography{biblio}
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
