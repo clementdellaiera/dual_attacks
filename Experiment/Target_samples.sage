@@ -1,6 +1,7 @@
 ##   Load lattice basis 
 load('Parameters.sage')
-[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load('Lattice_basis/basis_LWE_50.sobj')
+[ is_LWE, stdev , rank , modulus , log_covolume ] , B = load("Lattice_basis/basis_isLWE_True_stdev_0.500000000000000_rank_50_modulus_931_logcovolume25.sobj")
+# B = load('Lattice_basis/basis_LWE_50.sobj')
 
 from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler \
     as DiscreteGaussian
@@ -35,7 +36,7 @@ size_db_random_s = 100
 if is_LWE :
 	target_list = []
 	R  = Zmod(modulus) 				# ZZ mod q
-	m  = rank - log_covolume			# m = n - k
+	m , k = rank - log_covolume , log_covolume			# m = n - k
 	BB = matrix(ZZ,B) 
 	A  = BB[0:log_covolume, m:rank]			# A in ZZ^{ m x k } such that B = qary Lattice of LWE (A)
 	A0 = BB[0:k, m:rank]

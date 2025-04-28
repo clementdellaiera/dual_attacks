@@ -13,7 +13,7 @@ sns.set_style('darkgrid')
 
 start = time()
 load('Parameters.sage')
-modulus , short_vector_list        = load('Dual_short_vectors/dual_short_vectors_50')
+modulus , short_vector_list        = load('Dual_short_vectors/dual_short_vectors.sobj') # dual_short_vectors_50')
 target_list_LWE , target_list_unif = load('Target_samples/target_samples_attack')
 
 print("Loading time : ", time() - start , ' sec')
