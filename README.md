@@ -129,8 +129,32 @@ follows a similar distribution as the norm distribution of points uniformly from
 the ball. When running a sieve on a random lattice, this assumption seems fair,
 because we do not expect the lattice to be distorted in any particular direction.
 Note that this heuristic does not assume all vectors are of the same length
-r_sat √n, as done in e.g. [GJ21]. Instead the heuristic predicts there may be some
+r_sat √n, as done" in e.g. [GJ21]. Instead the heuristic predicts there may be some
 shorter vectors w, albeit with smaller probability, but still most of the vectors
 are close to the boundary of the ball. The very short vectors are more beneficial
 in the dual attack than longer vectors, so the analysis will be more conservative
 when taking shorter vectors into account.
+
+**Heuristic 3.** Fix a set W of dual vectors from a lattice sieve. Then, errors t ←
+U(r_d S^{n−1}) have a score distribution f_W(t) that is gaussian with mean E_S(r_p)
+and variance V_S(r_p). In particular, the score distribution is described by the
+following CDF,...
+
+
+At this point, one could argue that one still assumes a central limit heuristic
+to obtain the score distribution. However, the crucial difference between Heuris-
+tic 3 and the Independence Heuristic of [DP23], is that Heuristic 3 takes a central
+limit of i.i.d. f_W(t) over the choice of t ∈ r_p Bn. However, irrespective of the tar-
+get distribution, the Independence Heuristic uses a central limit heuristic for
+the score f_W(t), and neglects the dependence of ∥t∥ on the mean score. This
+makes Heuristic 3 a sensible heuristic, although large experiments are ultimately
+needed to gain confidence in this heuristic. This can be found in Section 4.2.
+
+# Organisation
+## Utilisation des hypothèses d'indépendance dans les preuves
+### Conditionnement : pour contourner l'indépendance
+### Autre possibilité : utiliser des ingélités de concentration avec des fonctions lipschitziennes
+### Discussion autours des expériences de [DP23]. 
+
+## Modélisation de la sortie d'un sieve
+### Gaussienne discrète [SP24], uniforme sur une boule [SP24] : a-t-on réellement besoin de faire la distinction ?
