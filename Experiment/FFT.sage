@@ -26,3 +26,16 @@ axs[0].plot(points , target , 'ro', markersize = 0.1 )
 axs[1].plot(points , data_fft , 'ro' , markersize = 0.1 ) 
 
 plt.show()
+
+"""
+In dimension 1
+Say q = 2**n
+a not invertible mod q , a = 2**k
+L 	= { x in ZZ | x = a y mod q }
+Lperp 	= { w in ZZ | a * w = 0 mod q } = 2**(n-k)ZZ
+
+Say q prime
+a random mod q
+L 	= { ( x_0 , x_1 ) in ZZ^2 | x_0 = y_0 + a * y_1 mod q , x_1 = y_1 mod q }
+Lperp 	=  {( w_0 , w_1 ) in ZZ^2 | w_0  ,  - a* w_0 + w_1 = 0 mod q }
+"""
