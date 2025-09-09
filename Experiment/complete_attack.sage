@@ -50,6 +50,27 @@ def siever(BASIS , RANK):
 	
 	return(short_vector_list)
 
+def Distinguisher(short_vector_list , target , modulus):
+	import numpy as np
+	import cupy as cp
+	
+	W = cp.array(short_vector_list)
+	target = cp.array(target) #.transpose() 
+
+	print(W.shape)
+	print(target.shape)
+
+	data  = cp.mod(cp.matmul(W , target) , int(modulus))
+
+	cp.cuda.Stream.null.synchronize()
+
+	cos_data = cp.cos(2/modulus * cp.pi * data)
+
+	score = cp.mean(cos_data ,axis = 0)
+
+	return(score)
+
+
 ####################
 ##   Parameters   ##
 #################### 
@@ -60,6 +81,7 @@ rank_guess = 3
 ####################
 ##   Experiment   ##
 ####################
+
 print("Lattice :")
 print("q-ary")
 print("Rank, index , modulus : ",rank , log_covolume , modulus )
@@ -79,6 +101,6 @@ B_guess_perp = IntegerMatrix.from_matrix(B_guess_perp)
 
 dual_short_vectors = siever(B_guess_perp, log_covolume + rank_guess)
 
+target = [ randint(0,modulus) for i in range(log_covolume+rank_guess) ]
 
-
-
+print('test : ',Distinguisher(dual_short_vectors , target , modulus))
