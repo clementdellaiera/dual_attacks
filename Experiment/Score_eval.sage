@@ -162,6 +162,10 @@ from time import time
 start = time()
 T_fft = fft_multidim_sparse(TABLE  , p , k_fft)
 
+score = { v : real(a) for v , a in T_fft.items() }
+#print( "key with max value : " ,max(score , key=score.get) )
+
+
 print('multidimensional FFT : ')
 print('Parameters : modulo ',p,' | dimension : ', k_fft )
 print('Execution time : ', time() - start,' s')
@@ -179,3 +183,7 @@ print(B_lat_dual)
 '''
 
 #print(TABLE)
+
+# Evaluation lazy
+ test = [ np.cos( 2*np.pi * I *target.lift().inner_product(w[:m] )/ q) for w in short_vector_list]              
+ sum(test)
