@@ -14,9 +14,10 @@ def gaussian_sampler( dimension , stdev) :
     D = DiscreteGaussianDistributionIntegerSampler(sigma=stdev)
     return( vector(ZZ, [D() for k in range(dimension)]))
 
-def exp_mod_q( float_number ) :
+def exp_mod( float_number , q ) :
     a = (2 * I * np.pi ) / q 
-    return( np.exp( a * x) )
+    y = np.exp( a * int(float_number)) 
+    return( complex(y) )
 
 def short_vectors_get( B_column_basis , stdev , vector_number):
     B_LLL = B_column_basis.LLL()
@@ -32,14 +33,21 @@ def initialize_table( s_test_enum , short_vector_list , target , A_fft , A_enum 
         y_j_fft , y_j_enum  = x_j.transpose() * A_fft , x_j.transpose() * A_enum 
         index = nearest_integer( ( p / q ) * y_j_fft)
         if index in TABLE.keys() :
-            TABLE[index] +=  exp_mod_q(x_j.transpose() * target - y_j_enum.transpose() * s_test_enum )
+            TABLE[index] +=  exp_mod(x_j.transpose() * target - y_j_enum.transpose() * s_test_enum ,q  )
         else :
-            TABLE[index] =  exp_mod_q(x_j.transpose() * target - y_j_enum.transpose() * s_test_enum )
+            TABLE[index] =  exp_mod(x_j.transpose() * target - y_j_enum.transpose() * s_test_enum , q)
         return(TABLE)
 
 #############
 ##   FFT   ##
 #############
+
+def addition_tuple(v1, v2, modulus):
+    """
+    Addition de deux vecteurs (tuples) modulo q.
+    """
+    resultat = tuple((x + y) % modulus for x, y in zip(v1, v2))
+    return(resultat)
 
 def BitReverse( n_int , bitlen ) : 
     # input  : int n in [0,..,pow(2,bitlen)-1]
@@ -53,6 +61,8 @@ def BitReverse( n_int , bitlen ) :
     bit_rev = bin_rep[::-1]
     return(int(bit_rev , 2))
 
+
+
 # ML-DSA
 '''
 q = pow(2,23) - pow(2,13) + 1   # Solinas prime
@@ -63,10 +73,12 @@ zeta = { i : power_mod(z0,BitReverse(i), q) for i in range(1, rank)}
 
 print('q , rank , root of unity : ', q , ' | ' , rank, ' | ' , z0 ) 
 '''
-def NTT(T):
-    assert len(T) == rank , "input of NTT : wrong size in NTT.sage/NTT"
+# def FFT(T , index ,modulo ):
+
+def FFT(T , modulo):
+    assert len(T) == rank , "input of FFT : wrong size in FFT.sage/FFT"
     W = T.copy()
-    m , L = 0 , 128
+    m , L = 0 , modulo // 2
     while L > 0 :
         start = 0 
         while start < rank : 
@@ -79,7 +91,7 @@ def NTT(T):
         L = floor(L / 2)
     return(W)
 
-def NTT_inverse(W):
+def FFT_inverse(W):
     assert len(W) == rank , "input of NTT_inverse : wrong size in NTT.sage/NTT"
     T = W.copy()
     m , L = 256 , 1
@@ -105,12 +117,14 @@ def NTT_inverse(W):
 sigma = 3.0
 q = 937
 m , n = 20 , 10
-k_enum , k_lat , k_fft = 1 , 5 , 4
+k_enum , k_lat , k_fft = 1 , 3 , 6
 assert (k_enum + k_lat + k_fft == n)
 N_short_vector = 1000
 
-L = 5
+L = 3
 p = pow(2,L) # modulo switching
+z0 = exp_mod(-1, p)
+zeta = { i : power(z0,BitReverse(i , L)) for i in range(0, p)}   
 
 A = random_matrix(  Zmod(q) , m , n)
 secret , error = gaussian_sampler(n , sigma) , gaussian_sampler(m , sigma)
@@ -137,11 +151,20 @@ labels = [ vector( ZZ , [ nearest_integer( (p/q)*y_fft.lift()[i][j] ) for j in r
 for k in range(N_short_vector) :
     g = tuple(labels[k])
     if g in TABLE.keys() :
-        TABLE[g] += exp_mod_q(c[k] - u[k] )
+        TABLE[g] += exp_mod(c[k] - u[k] , q )
     else :
-        TABLE[g] = exp_mod_q(c[k] - u[k] )
+        TABLE[g] = exp_mod(c[k] - u[k] , q)
 
         
+from FFT_gemini import *        
+
+from time import time
+start = time()
+T_fft = fft_multidim_sparse(TABLE  , p , k_fft)
+
+print('multidimensional FFT : ')
+print('Parameters : modulo ',p,' | dimension : ', k_fft )
+print('Execution time : ', time() - start,' s')
 
 '''
 A_fft = (p / q) * A_fft.lift()
@@ -150,8 +173,9 @@ s_test_enum = gaussian_sampler( m , sigma)
 '''
 # TABLE = initialize_table( s_test_enum , short_vector_list , target , A_fft , A_enum )
 
+'''
 print('LWE pair : ' , A ,' | ' , target)
 print(B_lat_dual)
-
+'''
 
 #print(TABLE)
