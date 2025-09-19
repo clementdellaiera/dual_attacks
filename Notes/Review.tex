@@ -86,12 +86,12 @@ Suppose one wants to recover the first $k$ coordinates $s_0\in \ZZ^k$ of $s$. By
 	\item[$\bullet$] whenever $s\neq s_0$, $(A_1, t- A_0 s)$ follows the uniform distribution $\U(\ZZ_q^{m\times (n-k)}\times \ZZ_q^m)$.
 \end{itemize}
 
-Suppose now we are able to sample short vectors $w_1,\ldots , w_N$ in $\LL_q(A_1)^\perp$ according to $\D = \D_{\LL_q(A_1)^\perp , s^{-1}}$, and that $N$ is big enough that $g_W$ and $f_{\D}$ \TN{Pas introduit encore ?} are indistinguishably close. Then 
-\[g_W(t) \approx \rho_s(\LL_q(A_1) +t ) / \rho_s(\LL_q(A_1) ).\]
+Suppose now we are able to sample short vectors $w_1,\ldots , w_N$ in $\LL_q(A_1)^\perp$ according to $\D = \D_{\LL_q(A_1)^\perp , s^{-1}}$, and that $N$ is big enough that $g_{\mathcal{W}}$ and $f_{\D}$ \TN{Pas introduit encore ?} are indistinguishably close. Then 
+\[g_{\mathcal{W}}(t) \approx \rho_s(\LL_q(A_1) +t ) / \rho_s(\LL_q(A_1) ).\]
 
 We suppose that $s$ is chosen so that 
-\[\argmin_{s\in \ZZ^n}g_W(s) \approx \argmin_{s\in \ZZ^n} f_{\D}(t - A_0 s) = s_0.\] 
-Then, as $g_W$ (as is $f_\D$) is $\LL_q(A_1)$-periodic and that $q\ZZ^n\subset \LL_q(A_1)$, $g_W$ can be seen as a function defined on the finite group $\ZZ_q^n$. One can use the Fast Fourier Transform algorithm to evaluate all values of $g_W$ and thus recover $s_0$. \TN{Pour être précis, tu calcules toutes les valeurs de $g_W$ pour ensuite prendre l'argmin ?}
+\[\argmin_{s\in \ZZ^n}g_{\mathcal{W}}(s) \approx \argmin_{s\in \ZZ^n} f_{\D}(t - A_0 s) = s_0.\] 
+Then, as $g_{\mathcal{W}}$ (as is $f_\D$) is $\LL_q(A_1)$-periodic and that $q\ZZ^n\subset \LL_q(A_1)$, $g_{\mathcal{W}}$ can be seen as a function defined on the finite group $\ZZ_q^n$. One can use the Fast Fourier Transform algorithm to evaluate all values of $g_{\mathcal{W}}$ and thus recover $s_0$. \TN{Pour être précis, tu calcules toutes les valeurs de $g_{\mathcal{W}}$ pour ensuite prendre l'argmin ?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Distinguisher}  		%%%%
@@ -110,9 +110,9 @@ The choice of $\D$, and thus of $f_\D$, is crucial to the analysis.
 We reserve a detailed discussion about the choice of $\D$ in section \ref{section : Sieve}. \\
 
 If we sample vectors $\mathcal{W}=\{w_1,\ldots , w_N\}\subset \LL_q(A)^\perp$ according to $\D$, a natural estimator of $f_\D(t)$ is given by the empirical mean
-\[g_W(t) = \frac{1}{N}\sum_{i=1}^N \cos(2\pi \langle w_i , t\rangle)\]
+\[g_\mathcal{W}(t) = \frac{1}{N}\sum_{i=1}^N \cos(2\pi \langle w_i , t\rangle)\]
 
-The following \TN{Référencer plus clairement le lemme, car il ne vient pas juste après.} lemma ensures that $g_W$ satisfies a gaussian-type concentration inequality around $f_\D$.
+The following \TN{Référencer plus clairement le lemme, car il ne vient pas juste après.} lemma ensures that $g_{\mathcal{W}}$ satisfies a gaussian-type concentration inequality around $f_\D$.
 
 \subsection{Reduction of $\sLWE$ to $\dLWE$}
 \TN{Work in progress j'imagine ?}
@@ -123,7 +123,7 @@ Notice that $(A_1 , A_1 s_1 + e ) = (A_1 , t- A_0 s_0  )$ : we have a new $\LWE$
 
 Suppose that $\Acal$ is a ppt adversary such that ...
 Define the following ppt algorithm 
-\[\tilde \Acal (A , t) = \argmin_{\tilde s \in \ZZ_q^{\ell}} g_W(\tilde s )  \]
+\[\tilde \Acal (A , t) = \argmin_{\tilde s \in \ZZ_q^{\ell}} g_{\mathcal{W}}(\tilde s )  \]
 \[ \PP (\tilde \Acal (A , t) = s ) \text{ vs } \PP (\Acal (A_1 , t- A_0 s_0  ) = 1 ) \]
 
 Formal justification of $f_{\D_{\LL ,s}}(t) - \rho_s(d(t,\LL)) \approx 0$ : if $d(t,\LL)\geq \sigma = s\sqrt{m/2\pi}$,
@@ -133,13 +133,13 @@ Formal justification of $f_{\D_{\LL ,s}}(t) - \rho_s(d(t,\LL)) \approx 0$ : if $
 \label{section : Sieve}		%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The distribution of vectors in $\mathcal{W}$ also influence the validity \TN{efficiency ?} of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
-\[f_\D(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
+The distribution of vectors in $\mathcal{W}$ also influence the validity \TN{efficiency ?} of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $\mathcal{W}$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
+\[f_\D(t) = \mathbb E[g_\mathcal{W}(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
 Using inequalities from the ,\\
 
 details about isotropy \\
 
-In other works (\cite{carrier2024reduction}, \cite{ducas2023accurate}), the output of a sieve is modelled as a uniform distribution on either a euclidean ball or a thick sphere. In these cases, the computation of the distinguisher relies on classical harmonic analysis of radial function, i.e. decomposition of the characteristic function against spherical harmonics, given by Bessel functions. See for instance %\cite{A}}\\
+In other works (\cite{carrier2024reduction}, \cite{ducas2023accurate}), \TN{Il faut dire que $\mathcal{W}$ est pris comme la sortie d'un sieve.} the output of a sieve is modelled as a uniform distribution on either a euclidean ball or a thick sphere. In these cases, the computation of the distinguisher relies on classical harmonic analysis of radial function, i.e. decomposition of the characteristic function against spherical harmonics, given by Bessel functions. See for instance %\cite{A}}\\
 
 Let us describe more precisely the previous paragraph. Let $B^{(d)}(r)$ be the euclidean ball $\{x\in\mathbb R^d \ : \  \|x\|_2\leq r\}$ and $S^{(d)}(r,\delta)$ be the thick sphere 
 \[ B^{(d)}(r+\delta) \backslash B^{(d)}(r-\delta).\] 
@@ -170,26 +170,26 @@ This ensures that if $W$ is a random variable following $D_{\Lambda^\vee, s^{-1}
 \[f(t) = \mathbb E[\cos (2\pi \langle W , t \rangle ) ] \quad \forall t\in \mathbb R^n.\] 
 
 Let $W_1,\ldots , W_N$ be i.i.d random variables with law $D_{\Lambda^\vee, s^{-1}}$. The random variables $\cos (2\pi \langle W , t \rangle ) $ are bounded. 
-Let us denote $\frac{1}{N}\sum_{k=1}^N \cos (2\pi \langle W_k , t \rangle )$ by $g_N(t)$. Then , by Chebyshev inequality,
+Let us denote $\frac{1}{N}\sum_{k=1}^N \cos (2\pi \langle W_k , t \rangle )$ by $g_N(t)$. Then, by Chebyshev inequality,
 \[\mathbb P( |g_N(t) - f(t) |\geq \varepsilon ) \leq  2 \exp( - \frac{2\varepsilon^2}{4N}) \quad \forall \varepsilon >0.\]
 
 The provable regime of Pouly-Shen follows from the properties of $\frac{ \rho_s (\Lambda + t)}{\rho_s (\Lambda )}$ as a distinguisher, which highly depends on $s$. This analysis breaks down if we consider $W_1,\ldots , W_N$ sampled from a sieve (and not sampled as independent draws of $D_{\Lambda,s^{-1}}$). 
 
-However, most papers (including \cite{ducas2023accurate}) assume that the output of a sieve is a sample of independent variables distributed as a uniform random variable on a Euclidean ball. In that case, the distinguisher can be computed as $f(t) = \mathbb E[e^{2i\pi\langle W , t \rangle} )]$ for $W\sim \mathcal U(B_n(r_{\text{sat}} \mathfrak{gh}_n))$ and approximated with a sample of size $N = \frac{1}{2}f_{\text{sat}}r_{\text{sat}} $ (see heuristic 2 of \cite{ducas2023accurate}, page 7). It remains to study if the behavious of $f(t)$ with respect to the distance. One reason for optimism is that gaussians in high dimensions are concentrated on spheres, thus I would expect the behaviours to be close. 
+However, most papers (including \cite{ducas2023accurate}) assume that the output of a sieve is a sample of independent variables distributed as a uniform random variable on a Euclidean ball. In that case, the distinguisher can be computed as $f(t) = \mathbb E[e^{2i\pi\langle W , t \rangle} )]$ for $W\sim \mathcal U(B_n(r_{\text{sat}} \mathfrak{gh}_n))$ and approximated with a sample of size $N = \frac{1}{2}f_{\text{sat}}r_{\text{sat}} $ (see heuristic 2 of \cite{ducas2023accurate}, page 7). It remains to study if the behaviour of $f(t)$ with respect to the distance \TN{Il manque un bout de phrase ?}. One reason for optimism is that gaussians in high dimensions are concentrated on spheres, thus I would expect the behaviours to be close. 
 
 \textcolor{blue}{The computation of the Fourier transform of the characteristic function of a ball is a classical result. In \cite{ducas2023accurate} (see lemma 2 page 9) and \cite{carrier2024reduction} (see proposition 7), authors actually use it  }   
 
 We can summarize the discussion above by the following.
 
 \begin{corollary}
-Let $W_1,\ldots , W_N$ be a independent identically distributed random vector distributed as $D_{\Lambda^\vee , s^{-1}}$ and 
+Let $W_1,\ldots , W_N$ be a independent identically distributed random vector distributed as $D_{\Lambda^\vee , s^{-1}}$ and let
 \[g_N(t) = \sum_{k=1}^N\cos(2\pi \langle W_k,t\rangle )\quad\forall t\in\mathbb R^n.\] 
 Then 
 \[\mathbb P( |g_N(t) - \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}) |\geq \varepsilon ) \leq  2 \exp( - \frac{2\varepsilon^2}{4N}) \quad \forall \varepsilon >0.\]
 \end{corollary}
 
-In order to relate this result to solving CVP, we can use the following inequality (see \cite{banaszczyk1993new}) 
-\[ e^{-s\pi d(t,\Lambda)^2} \leq \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\leq 1 \]
+In order to relate this result to solving CVP, we can use the following inequality (see \cite{banaszczyk1993new}) \TN{Ecrire explicitement ce que ça fournirait comme estimation.} 
+\[ e^{-s\pi d(t,\Lambda)^2} \leq \frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)}\leq 1. \]
 \begin{proof}(from \cite{stephens2017gaussian}, lemma 1.3.10)
 Up to translating by element of $\Lambda$, we can suppose that $t$ is in the Voronoi fundamental domain, i.e. $d(t,\Lambda) = \|t\|$, and thus $\rho_s(t)= e^{-s\pi d(t,\Lambda)^2}$. Then 
 \[\begin{split}
@@ -203,11 +203,11 @@ Up to translating by element of $\Lambda$, we can suppose that $t$ is in the Vor
 
 For $B\in GL(d,\mathbb R)$, let $b_1$ be $B$'s first column and let us denote $\frac{\|b_1\|}{\text{det}(B)^{1/d}}$ as $\delta_B$.\\
 
-On input a basis $B$ of a lattice $\Lambda$, BKZ$_\beta$ with a sieving oracle as SVP oracle outputs vectors that can be modeled as one of the following :
+On input a basis $B$ of a lattice $\Lambda$, BKZ$_\beta$, using a sieving oracle as SVP oracle, outputs vectors that can be modeled as one of the following: \TN{$\beta$ n'intervient pas dans les caractérisations suivantes ?}
 \begin{itemize}
 \item[$\bullet$] $N = \frac{1}{2}f_{sat}r_{sat}^n$ independant uniform random variables on a ball of radius $r_{sat} \mathfrak{gh}_n$, where $r_{sat}\geq 1$ is the saturation radius, and $f_{sat}\in (0,1]$ is the saturation ratio (see Heuristic 2 of \cite{ducas2023accurate}).
-\item[$\bullet$] independant uniform random variables on $\Lambda^\vee \cap \{t\in \mathbb R^d : R-\varepsilon\leq \|x\| \leq R+\varepsilon\}$ (see section of \cite{carrier2024reduction}). 
-\item[$\bullet$] independant (continuous) normal variables $\mathcal N(0,R I_d)$ (assumption 21 and 23 of \cite{espitau2020dual}). 
+\item[$\bullet$] Independant uniform random variables on $\Lambda^\vee \cap \{t\in \mathbb R^d : R-\varepsilon\leq \|x\| \leq R+\varepsilon\}$ (see section of \cite{carrier2024reduction}). 
+\item[$\bullet$] Independant (continuous) normal variables $\mathcal N(0,R I_d)$ (assumption 21 and 23 of \cite{espitau2020dual}). 
 \end{itemize}
 where $R = \delta_B^d det(\Lambda)^{1/d} / \sqrt{d}$. \\
 
@@ -243,13 +243,13 @@ are not.
 This should in principle invalidate the use of Hoeffding inequality which requires the summands to be independant. But the bound obtained does not depend on the value of $t$, which by a simple conditionning allows us to still obtain the same bound. Indeed, $\cos (\langle w ,t \rangle)$ are independant conditionally to $t$, i.e. for every family of measurable subsets $\{A_w\}_{w\in W}$ of $\mathbb R$, we have
 \[ \mathbb P(\cap_{w\in W} \cos (\langle w ,t \rangle) \in A_w | t) =\prod_{w\in W} \mathbb P(\cos (\langle w ,t \rangle) \in A_w | t) .\] 
 In \cite{PoulyShen}, the use of Hoeffding inequality ensures that
-\[\mathbb P(|g_w(t)-f(t)| > \varepsilon |t) \leq Ce^{-c\varepsilon^2}.\]
+\[\mathbb P(|g_{\mathcal{W}}(t)-f(t)| > \varepsilon |t) \leq Ce^{-c\varepsilon^2}.\]
 Then 
 \[\begin{split}
-\mathbb P(|g_w(t)-f(t)| > \varepsilon ) & =\int \mathbb P(|g_w(t)-f(t)| > \varepsilon |t = t')\mathbb P_t(dt') \\
+\mathbb P(|g_{\mathcal{W}}(t)-f(t)| > \varepsilon ) & =\int \mathbb P(|g_{\mathcal{W}}(t)-f(t)| > \varepsilon |t = t')\mathbb P_t(dt') \\
 		& \leq Ce^{-c\varepsilon^2}\\
 \end{split}\]
-Thus, we see that $g_w(t)$ concentrated around its mean value $f(t)$, even in the independance heuristic.
+Thus, we see that $g_{\mathcal{W}}(t)$ concentrated around its mean value $f(t)$, even in the independance heuristic.
 
 \subsection{Concentration inequalities for lipschitz functions of discrete gaussians}
 In order to be able to apply the exact bounds for a LWE distinguisher, we prove concentration inequalities valid for discrete gaussians. 
