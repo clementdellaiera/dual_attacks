@@ -11,6 +11,9 @@
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
 
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\LL}{\mathcal{L}}
+
 \title{Notes sur les attaques duales}
 \author{Clément Dell'Aiera}
 
@@ -35,7 +38,9 @@ Cela serait bien d'avoir des tests sur des protocoles soumis au NIST (comme dans
 
 \section{Revue de la littérature}
 
-\subsection{Laarhoven Walter (2021)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Laarhoven Walter (2021)}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Modélisation statistique du Distingueur et dérivation de l'estimateur de Neyman-Pearson. Comparaison avec l'estimateur de Aharonov-Regev et l'estimateur le plus simple (la somme des cosinus). 
 
@@ -47,7 +52,9 @@ Une question intéressante : calculer l'erreur de seconde espèce pour le test a
 
 Computation of the statistical distance between the probability distributions of $\langle w , t \rangle \pmod{1}$ for $t$ uniform and gaussian.  
 
-\subsection{Matzov (2022)}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Matzov (2022)} %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Voir la discussion \url{https://groups.google.com/a/list.nist.gov/g/pqc-forum/c/Fm4cDfsx65s}.
 
@@ -69,8 +76,6 @@ Comme l'on ne cherche pas à avoir le vecteur le plus court de $\Lambda^\vee$, o
 Etape 2 - FFT
 \[b = As +e = A_1 s_1 + A_2 s_2 + e , w_j = (u_j , v_j)\]
 
-
-
 \[\begin{split}
 \sum_{j} e^{\frac{2i\pi}{q}\langle u_j , b - A_1\tilde{s_1} \rangle} 
 	& = \sum_j e^{\frac{2i\pi}{q}\langle u_j , b\rangle }e^{ - \frac{2i\pi}{q}\langle u_j ,A_1\tilde{s_1} \rangle}\\
@@ -83,6 +88,16 @@ Remarque sur le modulus switching : au début de la section 8, page 20, de \cite
 source distortion code for the Euclidean metric which can be replaced by an almost optimal polar code."
 Aussi : "Krawtchouk polynomials as the Fourier transform of the indicator function of a Hamming sphere" ; i.e. si $\mathcal E_t = \{x \in \mathbb F_2^n\ : \ |x|_{h} = t\}$, 
 \[K_{t,n}(|x|_h)  = \hat{1_{\mathcal E_t}} (w) = \sum_{x\in \mathcal E_t} (-1)^{\langle w,x \rangle}.\]
+
+Remarques :
+
+Peut-être qu'une parallélisatione est possible. Rappelons que les étapes sont les suivantes :*
+\begin{itemize}
+	\item On choisit un bloc $s_{enum}\in \ZZ^{k_{enum}}$ à deviner, et ensuite on choisit $k_{lat}$ et $k_{fft}$ tels que $n = k_{enum} + k_{lat} + k_{fft}$. 
+	\item On exécute un sieve sur $\LL_{q}(A_{lat}$ de dimension $m+k_{lat}$ (sur la base $B^{dual}_{lat}\in \ZZ^{m+k_{lat}}$). 
+	
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Ducas Pulles (2023)}%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

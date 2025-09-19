@@ -14,46 +14,120 @@
 \newtheorem{corollary}{Corollary}[theorem] 
 \newtheorem{lemma}{Lemma}
 
-\title{Review of the dual attack on euclidean lattices}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\Prob}{\mathsf{Prob}}
+\newcommand{\PP}{\mathbb{P}}
+
+\newcommand{\argmin}{\text{arg}\min}
+
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\LL}{\mathcal{L}}
+\newcommand{\U}{\mathcal{U}}
+\newcommand{\Acal}{\mathcal{A}}
+
+\newcommand{\LWE}{\mathsf{LWE}}
+\newcommand{\dLWE}{\mathsf{DecisionalLWE}}
+\newcommand{\cLWE}{\mathsf{ComputationalLWE}}
+
+\newcommand{\CVP}{\mathsf{CVP}}
+
+\title{Review of the dual attack on $\LWE$}
 \author{Clément Dell'Aiera - Pierre-Alain Fouque - Tuong-Huy Nguyen}
 
 \begin{document}
 %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%
 \maketitle
+
+Let $m,n,q\in\NN_{>0}$ and $\nu\in \Prob (\ZZ_q^m \times \ZZ_q^n )$.\\
+
+The LWE distribution $\LWE^{m,n,q}_\nu \in \Prob(\ZZ_q^{m\times n} \times \ZZ_q^{m})$ is defined as the distribution followed by $(A,As+ e )$ whenever $A\sim \ZZ_q^{m\times n }$, $(s,e)\sim \nu$. If $\nu\in\Prob(\ZZ_q)$, we make a slight abuse of notations and suppose that $s\sim \nu^{\otimes n}$ and $e\sim \nu^{\otimes m}$. The distribution $\nu$ is implcitely thought to yield small coefficients with respect to the euclidean norm.
+
+\section{A reminder on the dual attack}
+
+The dual attack on LWE relies on the following steps.
+\begin{itemize}
+	\item[$\bullet$] the construction of a distinguisher between the distributions $\LWE^{m,n,q}_\nu$ and $\U(\ZZ_q^{m\times n} \times \ZZ_q^{m})$.
+	\item[$\bullet$] the (conditional) equivalence between $\dLWE^{m,n - \ell,q}_\nu$ and $\cLWE_\nu^{m,\ell,q}$. 
+	\item[$\bullet$] the approximate equivalence between $\dLWE^{m,n,p}_\nu$ and $\dLWE^{m,n,q}_\nu$ for some $p<<q$. This step is dealt wit via modulo switching in \cite{Matzov} and via a code construction in \cite{carrier2024reduction}.
+	\item[$\bullet$] the sampling of short dual vectors in the dual lattice $\LL_q(A)^\perp$.
+\end{itemize}
+
 Critics of the dual attack have focused their arguments on the following points :
 \begin{itemize}
 \item[$\bullet$] The independence of the summands in the distiguisher.
-\item[$\bullet$] The distribution of the output of a sieve.
+\item[$\bullet$] The model for the distribution of the output of a sieve.
 \item[$\bullet$] The contradictory regime that follows from numerical experiment. The attack could not work for some specific choices of parameters, choices that were determined experimentally.
 \end{itemize}
 
-\subsection{Independance}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A quick review}  		%%%%
+\label{section : QuickReview}	%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The independance heurisic refers to the following problem. Let $W\subset  \Lambda^\vee$ be a family of vectors and $t\in \mathbb R^n$, all of which are sampled from probability distributions. Even if we suppose that all vectors in $W$ are mututally independant, the random variables 
-\[\cos (\langle w ,t \rangle) \text{ for }w\in W\]
-are not. 
+Let us first present the dual attack in a simple case. Let $s,e$ be sampled independantly according to $\D_{\ZZ^n,s}$, $A\sim \ZZ_q^{m\times n}$ and let 
+\[ t = As + e.\]
+Suppose one wants to recover the first coordinates $s_0\in \ZZ^k$ of $s$. By writing $A$ as a block matrix $\left(\begin{array}{c|c} A_0 & A_1 \end{array}\right)$, one gets $t= A_0 s_0 + A_1 s_1 + e$. Then
+\begin{itemize}
+	\item[$\bullet$] $(A_1, t- A_0 s_0)$ is a $\LWE$ sample,
+	\item[$\bullet$] for every $s\neq s_0$, $(A_1, t- A_0 s)$ is not a $\LWE$ sample, and follows the distribution $\U(\ZZ_q^{m\times (n-k)}\times \ZZ_q^m)$.
+\end{itemize}
 
-This should in principle invalidate the use of Hoeffding inequality which requires the summands to be independant. But the bound obtained does not depend on the value of $t$, which by a simple conditionning allows us to still obtain the same bound. Indeed, $\cos (\langle w ,t \rangle)$ are independant conditionally to $t$, i.e. for every family of measurable subsets $\{A_w\}_{w\in W}$ of $\mathbb R$, we have
-\[ \mathbb P(\cap_{w\in W} \cos (\langle w ,t \rangle) \in A_w | t) =\prod_{w\in W} \mathbb P(\cos (\langle w ,t \rangle) \in A_w | t) .\] 
-In \cite{PoulyShen}, the use of Hoeffding inequality ensures that
-\[\mathbb P(|g_w(t)-f(t)| > \varepsilon |t) \leq Ce^{-c\varepsilon^2}.\]
-Then 
-\[\begin{split}
-\mathbb P(|g_w(t)-f(t)| > \varepsilon ) & =\int \mathbb P(|g_w(t)-f(t)| > \varepsilon |t = t')\mathbb P_t(dt') \\
-		& \leq Ce^{-c\varepsilon^2}\\
-\end{split}\]
-Thus, we see that $g_w(t)$ concentrated around its mean value $f(t)$, even in the independance heuristic.
+Suppose now we are able to sample short vectors $w_1,\ldots , w_N$ in $\LL_q(A_1)^\perp$ according to $\D = \D_{\LL_q(A_1)^\perp , s^{-1}}$, and that $N$ is big enough that $g_W$ and $f_{\D}$ are indistinguishably close. Then 
+\[g_W(t) \approx \rho_s(\LL_q(A_1) +t ) / \rho_s(\LL_q(A_1) ).\]
 
-\subsection{Output of a sieve}
+We suppose that $s$ is chosen so that 
+\[\argmin_{s\in \ZZ^n}g_W \approx \argmin_{s\in \ZZ^n} f_{\D}(t - A_0 s) = s_0.\] 
+Then, as $g_W$ (as is $f_\D$) is $\LL_q(A_1)$-periodic and that $q\ZZ^n\subset \LL_q(A_1)$, $g_W$ can be seen as a function defined on the finite group $\ZZ_q^n$. One can use the Fast Fourier Transform algorithm to evaluate all values of $g_W$ and thus recover $s_0$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Distinguisher}  		%%%%
+\label{section : Distinguisher}	%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The distinguishers in \cite{PoulyShen,DucasPulles} are built as estimators of characteristic functions, i.e. functions of the type
+\[f_\D(t) = \EE_{W\sim \D}[e^{2i\pi \langle W, t\rangle}]  \]
+where $\D$ is some distribution on the dual lattice $\LL_q(A)^{\perp}$. Notice that when $\D$ is symmetric, $f_\D$  is real-valued so that $f_\D(t) = \EE_{}[\cos(2\pi \langle W ,t\rangle)]$.\\
+
+The choice of $\D$, and thus of $f_\D$, is crucial to the analysis. 
+\begin{itemize}
+	\item[$\bullet$] The authors in \cite{PoulyShen} were able to prove that, with the specific choice of $\D = \D_{\LL_q(a)^\perp , s^{-1}}$, the function $f_\D(t)$ is related to geometric properties of the lattice and to $\CVP$. \\
+	\item[$\bullet$] On the other end, in \cite{DucasBetter}, the author work with the choice of $\D$ being a uniform distribution on a (continuous) euclidean ball. While the computation of $f_\D$ is still possible in this case\footnote{The computation relies on classical harmonic decomposition of radial functions.}, to our knowledge, no justification as to why $f_\D$ and $\CVP$ are related exists in the litterature. We provide such an argument in section \ref{section : Sieve}. \\
+\end{itemize}
+We reserve a detailed discussion about the choice of $\D$ for section \ref{section : Sieve}. \\
+
+If we sample vectors $W=\{w_1,\ldots , w_N\}\subset \LL_q(A)^\perp$ according to $\D$, a natural estimator of $f_\D(t)$ is given by the empirical mean
+\[g_W(t) = \frac{1}{N}\sum_{i=1}^N \cos(2\pi \langle w_i , t\rangle.)\]
+
+The following lemma ensures that $g_W$ satisfies a gaussian-type concentration inequality around $f_\D$.
+
+\subsection{Reduction of $\cLWE$ to $\dLWE$}
+
+Let $t= As +e\in \ZZ_q^{m}$. If we decompose $A$ as $\begin{pmatrix} A_0 &  A_1\end{pmatrix}$, we can write 
+\[ t = A_0 s_0 + A_1 s_1 +e.\]
+Notice that $(A_1 , A_1 s_1 + e ) = (A_1 , t- A_0 s_0  )$ : we have a new $\LWE$ sample conditional to $s_0$.
+
+Suppose that $\Acal$ is a ppt adversary such that ...
+Define the following ppt algorithm 
+\[\tilde \Acal (A , t) = \argmin_{\tilde s \in \ZZ_q^{\ell}} g_W(\tilde s )  \]
+\[ \PP (\tilde \Acal (A , t) = s ) \text{ vs } \PP (\Acal (A_1 , t- A_0 s_0  ) = 1 ) \]
+
+Formal justification of $f_{\D_{\LL ,s}}(t) - \rho_s(d(t,\LL)) \approx 0$ : if $d(t,\LL)\geq \sigma = s\sqrt{m/2\pi}$,
+\[\rho_s(d(t,\LL)) \leq f_{\D_{\LL ,s}}(t) \leq \rho_s(d(t,\LL) - \sigma) \]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Output of a sieve}  %%%
+\label{section : Sieve}		%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The distribution of vectors in $W$ also influence the validity of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
-\[f(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
+\[f_\D(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
 Using inequalities from the ,\\
 
 details about isotropy \\
 
-In other works (\cite{carrier2024reduction}, \cite{ducas2023accurate}), the output of a sieve is modelled as a uniform distribution on either a euclidean ball or a thick sphere. In these cases, the computation of the distinguisher relies on classical harmonic analysis of radial function, i.e. decomposition of the characteristic function against spherical harmonics, given by Bessel functions. See for instance \cite{}}\\
+In other works (\cite{carrier2024reduction}, \cite{ducas2023accurate}), the output of a sieve is modelled as a uniform distribution on either a euclidean ball or a thick sphere. In these cases, the computation of the distinguisher relies on classical harmonic analysis of radial function, i.e. decomposition of the characteristic function against spherical harmonics, given by Bessel functions. See for instance %\cite{A}}\\
 
 Let us describe more precisely the previous paragraph. Let $B^{(d)}(r)$ be the euclidean ball $\{x\in\mathbb R^d \ : \  \|x\|_2\leq r\}$ and $S^{(d)}(r,\delta)$ be the thick sphere 
 \[ B^{(d)}(r+\delta) \backslash B^{(d)}(r-\delta).\] 
@@ -146,49 +220,24 @@ Then
 \end{corollary}
 en montrant que $\mathbb Eg_N(t) $ devrait être proche de $\frac{\rho_s(t+\Lambda)}{\rho_s(\Lambda)})$ par approximation gaussienne (obtenue par concentration de la norme).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Independance}  %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Relative versions of computational problems}%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The independance heurisic refers to the following problem. Let $W\subset  \Lambda^\vee$ be a family of vectors and $t\in \mathbb R^n$, all of which are sampled from probability distributions. Even if we suppose that all vectors in $W$ are mututally independant, the random variables 
+\[\cos (\langle w ,t \rangle) \text{ for }w\in W\]
+are not. 
 
-Let $G$ be a locally compact abelian group endowed with a metric $d : G\times G \rightarrow \mathbb R$, $H$ a finitely generated subgroup and $\mu$ a probability measure on $G/H$, $\eta$ a probability measure on $G$. Define the following problem
-$$\mathcal P_{\text{search}} (G,\mu) : \text{Given } (H,x) \text{ s.t. }x+H \sim \mu , \text{ find argmin}_{a\in H} d(x,a).$$
-$$\mathcal P_{\text{decision}}(G,\eta) : \text{Given } (H,t) \text{ where } t\in G, \text{ decide if } t + H \sim \mathcal U(G/H) \text{ vs } t\sim D$$
-In particular instances, this problem specializes to well studied problems. The generalization is motivated to highlight some subtle points : it can happen that one has to deal with codes while starting with a problem related to lattices. For example, this phenomenon arises in LWE because the quotient of the LWE lattice $\Lambda_q(A)$ by $q\mathbb Z^n$ is not a lattice but a finite group. 
-\[\begin{array}{|c|c|c| c | c|} 
-\hline
-G             & H                          & d     &  \mu              & \mathcal P (G,H,\mu)\\
-\hline
-\mathbb R^n   & \Lambda                    & \ell^2 & \chi_e            & \text{CVP}     \\
-\mathbb F_q^n & \mathcal C                 & d_H    & \text{uniform on fixed weight}    & \text{Decoding}\\
-\mathbb Z^{\text{nrow}(A)}  & \Lambda_q(A) & \ell^2 &  A \chi_s +\chi_e & \text{LWE}     \\
-\hline
-\end{array}\]
-
-Our work focuses on breaking $BDD(\Lambda)$ into a series of problems with the hope of decreasing the complexity :
-\begin{itemize}
-\item[$\bullet$] find $\Lambda_0$ such that $BDD(\Lambda_0)$ has quasi-polynomial complexity\footnote{Or just at least a better complexity than expected $BDD$ complexity.}.
-\item[$\bullet$] apply the dual attack to reduce $BDD(\Lambda)$ to $BDD(\Lambda_0)$. 
-%\item[$\bullet$] for $G = \Lambda/\Lambda_0$, $BDD(\Lambda)$, find $b\in B$ such that  is equivalent to 
-\end{itemize} 
-
-We also provide a rigorous statistical model for the attack. For the distinguishing step, we establish an exact deviation bound for the score which does not suppose independance on the terms of the sum. We explicitely link the maximization of the score function to the optimization of the p-value of the tests. The end of the work is devoted to a discussion of the parameters for which the attack is efficient, and comparison with previous work. 
-
-Our result allows a modification of the attack as described in \cite{pouly2023provable}. As we don't need the independance of the summands in the distinguisher, we can use a sieve to generate our sample of short vectors $W$ in $\Lambda^\vee$. This is more efficient than using independant calls to a gaussian sampler iteratively. Moreover, it is not clear that the results in \cite{pouly2023provable} apply even if $W$ is sampled with $|W|$ calls to a sampler, since the different terms are not independant once the randomness of the target is taken into account\footnote{if $w,w'$ are independant and $t\sim D_\Lambda$, $\langle w , t \rangle $ and $\langle w' , t \rangle $ are not necesserily independant.}.   
- 
-The distinguishing step depends on a sublattice $\Lambda_0 < \Lambda$. One builds a finite set of short vectors $W\subset \Lambda_0^\vee$ and define the distinguisher
-$$f_W(t) = \frac{1}{|W|} \sum_{w\in W} \cos (2\pi \langle w, t\rangle ).$$ 
-This function is $\Lambda_0$-periodic and thus 
-$$ t_0^* = \text{argmax}_{t\in V} f_W(t) = \text{argmax}_{t\in V/\Lambda_0} f_W(t+ \Lambda_0) $$
-satisfies $t - t_0^*$ follows a BDD-distribution on $\Lambda_0$.
-
-In the setting of LWE lattices, let us write $A  = [A_{dual} | A_{guess} ]$. With the notations as above, 
-$$\Lambda_0 = \Lambda_{q}(A_{dual}) < \Lambda_q(A).$$ 
-If the columns of $A$ are independant, we have that 
-$$\Lambda_{q}(A) / \Lambda_{q}(A_{dual}) \cong \Lambda_{q}(A_{guess})$$ 
-and when the attack is succesful, i.e. $s_{guess} = s_{guess}^*$, we get $t-As_{guess}^* = A_{dual}s_{dual} + e$.
-
-In the setting where $\Lambda / \Lambda_0 = G$ is a finite abelian group (as in \cite{ducas2023does}), we get the problem $\mathcal P(G,\mu)$. In \cite{ducas2023does}, the optimisation of $f_W$ is done first with computing its Fourier transform, which for particular case of groups such as $(\mathbb Z / 2 \mathbb Z)^n$ can be done very efficiently. 
+This should in principle invalidate the use of Hoeffding inequality which requires the summands to be independant. But the bound obtained does not depend on the value of $t$, which by a simple conditionning allows us to still obtain the same bound. Indeed, $\cos (\langle w ,t \rangle)$ are independant conditionally to $t$, i.e. for every family of measurable subsets $\{A_w\}_{w\in W}$ of $\mathbb R$, we have
+\[ \mathbb P(\cap_{w\in W} \cos (\langle w ,t \rangle) \in A_w | t) =\prod_{w\in W} \mathbb P(\cos (\langle w ,t \rangle) \in A_w | t) .\] 
+In \cite{PoulyShen}, the use of Hoeffding inequality ensures that
+\[\mathbb P(|g_w(t)-f(t)| > \varepsilon |t) \leq Ce^{-c\varepsilon^2}.\]
+Then 
+\[\begin{split}
+\mathbb P(|g_w(t)-f(t)| > \varepsilon ) & =\int \mathbb P(|g_w(t)-f(t)| > \varepsilon |t = t')\mathbb P_t(dt') \\
+		& \leq Ce^{-c\varepsilon^2}\\
+\end{split}\]
+Thus, we see that $g_w(t)$ concentrated around its mean value $f(t)$, even in the independance heuristic.
 
 \subsection{Concentration inequalities for lipschitz functions of discrete gaussians}
 In order to be able to apply the exact bounds for a LWE distinguisher, we prove concentration inequalities valid for discrete gaussians. 
@@ -282,7 +331,52 @@ i.e. $f_W$ is a $L$-Lipschitz function.
 If one uses a sieve to sample vectors from $W$, we can give the following bounds 
 $$2\pi gh(\Lambda) \leq L \leq 2\pi\sqrt{\frac{4}{3}}gh(\Lambda) $$
 
-\subsection{Analogy with codes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Relative versions of computational problems}%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Let $G$ be a locally compact abelian group endowed with a metric $d : G\times G \rightarrow \mathbb R$, $H$ a finitely generated subgroup and $\mu$ a probability measure on $G/H$, $\eta$ a probability measure on $G$. Define the following problem
+$$\mathcal P_{\text{search}} (G,\mu) : \text{Given } (H,x) \text{ s.t. }x+H \sim \mu , \text{ find argmin}_{a\in H} d(x,a).$$
+$$\mathcal P_{\text{decision}}(G,\eta) : \text{Given } (H,t) \text{ where } t\in G, \text{ decide if } t + H \sim \mathcal U(G/H) \text{ vs } t\sim D$$
+In particular instances, this problem specializes to well studied problems. The generalization is motivated to highlight some subtle points : it can happen that one has to deal with codes while starting with a problem related to lattices. For example, this phenomenon arises in LWE because the quotient of the LWE lattice $\Lambda_q(A)$ by $q\mathbb Z^n$ is not a lattice but a finite group. 
+\[\begin{array}{|c|c|c| c | c|} 
+\hline
+G             & H                          & d     &  \mu              & \mathcal P (G,H,\mu)\\
+\hline
+\mathbb R^n   & \Lambda                    & \ell^2 & \chi_e            & \text{CVP}     \\
+\mathbb F_q^n & \mathcal C                 & d_H    & \text{uniform on fixed weight}    & \text{Decoding}\\
+\mathbb Z^{\text{nrow}(A)}  & \Lambda_q(A) & \ell^2 &  A \chi_s +\chi_e & \text{LWE}     \\
+\hline
+\end{array}\]
+
+Our work focuses on breaking $BDD(\Lambda)$ into a series of problems with the hope of decreasing the complexity :
+\begin{itemize}
+\item[$\bullet$] find $\Lambda_0$ such that $BDD(\Lambda_0)$ has quasi-polynomial complexity\footnote{Or just at least a better complexity than expected $BDD$ complexity.}.
+\item[$\bullet$] apply the dual attack to reduce $BDD(\Lambda)$ to $BDD(\Lambda_0)$. 
+%\item[$\bullet$] for $G = \Lambda/\Lambda_0$, $BDD(\Lambda)$, find $b\in B$ such that  is equivalent to 
+\end{itemize} 
+
+We also provide a rigorous statistical model for the attack. For the distinguishing step, we establish an exact deviation bound for the score which does not suppose independance on the terms of the sum. We explicitely link the maximization of the score function to the optimization of the p-value of the tests. The end of the work is devoted to a discussion of the parameters for which the attack is efficient, and comparison with previous work. 
+
+Our result allows a modification of the attack as described in \cite{pouly2023provable}. As we don't need the independance of the summands in the distinguisher, we can use a sieve to generate our sample of short vectors $W$ in $\Lambda^\vee$. This is more efficient than using independant calls to a gaussian sampler iteratively. Moreover, it is not clear that the results in \cite{pouly2023provable} apply even if $W$ is sampled with $|W|$ calls to a sampler, since the different terms are not independant once the randomness of the target is taken into account\footnote{if $w,w'$ are independant and $t\sim D_\Lambda$, $\langle w , t \rangle $ and $\langle w' , t \rangle $ are not necesserily independant.}.   
+ 
+The distinguishing step depends on a sublattice $\Lambda_0 < \Lambda$. One builds a finite set of short vectors $W\subset \Lambda_0^\vee$ and define the distinguisher
+$$f_W(t) = \frac{1}{|W|} \sum_{w\in W} \cos (2\pi \langle w, t\rangle ).$$ 
+This function is $\Lambda_0$-periodic and thus 
+$$ t_0^* = \text{argmax}_{t\in V} f_W(t) = \text{argmax}_{t\in V/\Lambda_0} f_W(t+ \Lambda_0) $$
+satisfies $t - t_0^*$ follows a BDD-distribution on $\Lambda_0$.
+
+In the setting of LWE lattices, let us write $A  = [A_{dual} | A_{guess} ]$. With the notations as above, 
+$$\Lambda_0 = \Lambda_{q}(A_{dual}) < \Lambda_q(A).$$ 
+If the columns of $A$ are independant, we have that 
+$$\Lambda_{q}(A) / \Lambda_{q}(A_{dual}) \cong \Lambda_{q}(A_{guess})$$ 
+and when the attack is succesful, i.e. $s_{guess} = s_{guess}^*$, we get $t-As_{guess}^* = A_{dual}s_{dual} + e$.
+
+In the setting where $\Lambda / \Lambda_0 = G$ is a finite abelian group (as in \cite{ducas2023does}), we get the problem $\mathcal P(G,\mu)$. In \cite{ducas2023does}, the optimisation of $f_W$ is done first with computing its Fourier transform, which for particular case of groups such as $(\mathbb Z / 2 \mathbb Z)^n$ can be done very efficiently. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Analogy with codes} %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 For $\mathbb F_q$, where $q = p^\ell$, recall (see corollary 7.1.3 of \cite{scarabotti2018discrete}) that $\mathbb F_q$ and its dual are isomorphic as groups via the following isomorphism 
 \[\left\{ \begin{array}{rcl}
