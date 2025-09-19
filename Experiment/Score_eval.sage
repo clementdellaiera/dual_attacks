@@ -109,6 +109,44 @@ def FFT_inverse(W):
     f = 8347681             # inverse(256) mod q
     return({ j : (f * T[j]) % q for j in range(rank)})
 
+def ScoreEval(A , q , N_short_vector , L , target , s_enum_test):
+	
+	m , n = A.nrows() , A.ncols()
+	k_enum , k_lat , k_fft
+	assert (k_enum + k_lat + k_fft == n)
+
+	p = pow(2,L) # modulo switching
+
+	A_enum , A_lat , A_fft = A[ : ,  : k_enum ] , A[ : , k_enum : k_enum + k_lat] , A[ : , k_enum + k_lat : ]
+	B_lat_dual = block_matrix( [ [ identity_matrix(ZZ , m) , zero_matrix(ZZ,m,k_lat) ] , [ A_lat.lift().transpose() , q * identity_matrix(ZZ,k_lat)] ] )
+	
+	short_vector_list = short_vectors_get( B_lat_dual , sigma , N_short_vector)
+	W = matrix(ZZ, N_short_vector , m + k_lat ,short_vector_list)    
+	x_transpose = W[:,:m] 
+
+	y_fft , y_enum = x_transpose * A_fft , x_transpose * A_enum
+	c  = x_transpose * target
+	u = y_enum * s_enum_test
+	
+	TABLE = {  }
+	labels = [ vector( ZZ , [ nearest_integer( (p/q)*y_fft.lift()[i][j] ) for j in range(k_fft) ])  for i in range(N_short_vector)  ]
+
+	for k in range(N_short_vector) :
+		g = tuple(labels[k])
+		if g in TABLE.keys() :
+			TABLE[g] += exp_mod(c[k] - u[k] , q )
+		else :
+			TABLE[g] = exp_mod(c[k] - u[k] , q)
+
+	
+        
+	TABLE_fft = fft_multidim_sparse(TABLE  , p , k_fft)
+
+	score = { v : real(a) for v , a in TABLE_fft.items() }
+	
+	argmax_score = max(score , key=score.get)
+	
+	return(argmax_score , score[argmax_score])
 
 ####################
 ##   Experiment   ##
@@ -117,73 +155,36 @@ def FFT_inverse(W):
 sigma = 3.0
 q = 937
 m , n = 20 , 10
-k_enum , k_lat , k_fft = 1 , 3 , 6
-assert (k_enum + k_lat + k_fft == n)
 N_short_vector = 1000
 
 L = 3
-p = pow(2,L) # modulo switching
-z0 = exp_mod(-1, p)
-zeta = { i : power(z0,BitReverse(i , L)) for i in range(0, p)}   
+
+k_enum , k_lat , k_fft = 1 , 3 , 6
+assert (k_enum + k_lat + k_fft == n)
 
 A = random_matrix(  Zmod(q) , m , n)
 secret , error = gaussian_sampler(n , sigma) , gaussian_sampler(m , sigma)
 target = A * secret + error
 
-A_enum , A_lat , A_fft = A[ : ,  : k_enum ] , A[ : , k_enum : k_enum + k_lat] , A[ : , k_enum + k_lat : ]
-B_lat_dual = block_matrix( [ [ identity_matrix(ZZ , m) , zero_matrix(ZZ,m,k_lat) ] , [ A_lat.lift().transpose() , q * identity_matrix(ZZ,k_lat)] ] )
-
-short_vector_list = short_vectors_get( B_lat_dual , sigma , N_short_vector)
-W = matrix(ZZ, N_short_vector , m + k_lat ,short_vector_list)    
-x_transpose = W[:,:m] 
-
-y_fft , y_enum = x_transpose * A_fft , x_transpose * A_enum
-c  = x_transpose * target
-
-#G_finite_group = IntegerModRing()vector_space( Zmod(p) , k_fft)
 
 s_enum_test = gaussian_sampler( k_enum , sigma)  
-u = y_enum * s_enum_test
-
-TABLE = {  }
-labels = [ vector( ZZ , [ nearest_integer( (p/q)*y_fft.lift()[i][j] ) for j in range(k_fft) ])  for i in range(N_short_vector)  ]
-
-for k in range(N_short_vector) :
-    g = tuple(labels[k])
-    if g in TABLE.keys() :
-        TABLE[g] += exp_mod(c[k] - u[k] , q )
-    else :
-        TABLE[g] = exp_mod(c[k] - u[k] , q)
 
         
 from FFT_gemini import *        
 
 from time import time
 start = time()
-T_fft = fft_multidim_sparse(TABLE  , p , k_fft)
 
-score = { v : real(a) for v , a in T_fft.items() }
-#print( "key with max value : " ,max(score , key=score.get) )
-
-
-print('multidimensional FFT : ')
-print('Parameters : modulo ',p,' | dimension : ', k_fft )
-print('Execution time : ', time() - start,' s')
-
-'''
-A_fft = (p / q) * A_fft.lift()
-A_enum = A_enum.lift()
-s_test_enum = gaussian_sampler( m , sigma)
-'''
 # TABLE = initialize_table( s_test_enum , short_vector_list , target , A_fft , A_enum )
 
 '''
 print('LWE pair : ' , A ,' | ' , target)
 print(B_lat_dual)
 '''
-
 #print(TABLE)
-
+start = time()
+print("Test function" , ScoreEval(A , q , N_short_vector , L , target, s_enum_test))
+print("Execution time : ", time() - start, ' s')
 # Evaluation lazy
- test = [ np.cos( 2*np.pi * I *target.lift().inner_product(w[:m] )/ q) for w in short_vector_list]              
- sum(test)
+# test = [ np.cos( 2*np.pi * I *target.lift().inner_product(w[:m] )/ q) for w in short_vector_list]              
+#sum(test)
