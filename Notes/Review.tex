@@ -6,6 +6,17 @@
 \usepackage{xcolor}
 %\usepackage{nicematrix}
 
+% active/désactive les commentaires facilement
+\newif\ifshowcomments
+\showcommentstrue   % mettre \showcommentsfalse pour tout masquer
+
+\DeclareRobustCommand{\TN}[1]{%
+  \ifshowcomments
+    {\color{orange} [TN][#1]}%
+  \fi
+}
+
+
 \setlength\parindent{0pt} %no indentation for paragraph
 
 \newtheorem{definition}{Definition}
@@ -28,8 +39,8 @@
 \newcommand{\Acal}{\mathcal{A}}
 
 \newcommand{\LWE}{\mathsf{LWE}}
-\newcommand{\dLWE}{\mathsf{DecisionalLWE}}
-\newcommand{\cLWE}{\mathsf{ComputationalLWE}}
+\newcommand{\dLWE}{\mathsf{decisionLWE}}
+\newcommand{\sLWE}{\mathsf{searchLWE}}
 
 \newcommand{\CVP}{\mathsf{CVP}}
 
@@ -40,26 +51,26 @@
 %%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%
 \maketitle
-
+\TN{J'ai remplacé ComputationalLWE par searchLWE, car c'est le terme usuel.}
 Let $m,n,q\in\NN_{>0}$ and $\nu\in \Prob (\ZZ_q^m \times \ZZ_q^n )$.\\
 
-The LWE distribution $\LWE^{m,n,q}_\nu \in \Prob(\ZZ_q^{m\times n} \times \ZZ_q^{m})$ is defined as the distribution followed by $(A,As+ e )$ whenever $A\sim \ZZ_q^{m\times n }$, $(s,e)\sim \nu$. If $\nu\in\Prob(\ZZ_q)$, we make a slight abuse of notations and suppose that $s\sim \nu^{\otimes n}$ and $e\sim \nu^{\otimes m}$. The distribution $\nu$ is implcitely thought to yield small coefficients with respect to the euclidean norm.
+The LWE distribution $\LWE^{m,n,q}_\nu \in \Prob(\ZZ_q^{m\times n} \times \ZZ_q^{m})$ is defined as the distribution followed by $(A,As+ e )$ whenever $A\sim \ZZ_q^{m\times n }$ \TN{Est-ce que ce n'est pas $\mathcal{U}(\ZZ_q^{m\times n })$ ?}, $(s,e)\sim \nu$. If $\nu\in\Prob(\ZZ_q)$, we make a slight abuse of notations and suppose that $s\sim \nu^{\otimes n}$ and $e\sim \nu^{\otimes m}$. The distribution $\nu$ is implcitely thought to yield small coefficients with respect to the euclidean norm.
 
 \section{A reminder on the dual attack}
 
-The dual attack on LWE relies on the following steps.
+The dual attack on LWE relies on the following steps:
 \begin{itemize}
-	\item[$\bullet$] the construction of a distinguisher between the distributions $\LWE^{m,n,q}_\nu$ and $\U(\ZZ_q^{m\times n} \times \ZZ_q^{m})$.
-	\item[$\bullet$] the (conditional) equivalence between $\dLWE^{m,n - \ell,q}_\nu$ and $\cLWE_\nu^{m,\ell,q}$. 
-	\item[$\bullet$] the approximate equivalence between $\dLWE^{m,n,p}_\nu$ and $\dLWE^{m,n,q}_\nu$ for some $p<<q$. This step is dealt wit via modulo switching in \cite{Matzov} and via a code construction in \cite{carrier2024reduction}.
-	\item[$\bullet$] the sampling of short dual vectors in the dual lattice $\LL_q(A)^\perp$.
+	\item[$\bullet$] the construction of a distinguisher between the distributions $\LWE^{m,n,q}_\nu$ and $\U(\ZZ_q^{m\times n} \times \ZZ_q^{m})$,
+	\item[$\bullet$] the (conditional) equivalence between $\dLWE^{m,n - \ell,q}_\nu$ and $\sLWE_\nu^{m,\ell,q}$, \TN{Que signifie conditional ?}
+	\item[$\bullet$] the approximate equivalence between $\dLWE^{m,n,p}_\nu$ and $\dLWE^{m,n,q}_\nu$ for some $p<<q$. This step is dealt with via modulo switching in \cite{Matzov} and via a code construction in \cite{carrier2024reduction}.
+	\item[$\bullet$] the sampling of short dual vectors in the dual lattice $\LL_q(A)^\perp$,
 \end{itemize}
 
-Critics of the dual attack have focused their arguments on the following points :
+Critics of the dual attack have focused their arguments on the following points:
 \begin{itemize}
-\item[$\bullet$] The independence of the summands in the distiguisher.
-\item[$\bullet$] The model for the distribution of the output of a sieve.
-\item[$\bullet$] The contradictory regime that follows from numerical experiment. The attack could not work for some specific choices of parameters, choices that were determined experimentally.
+\item[$\bullet$] the independence of the summands in the distiguisher,
+\item[$\bullet$] the model for the distribution of the output of a sieve, \TN{Il faudrait préciser où intervient le sieve et donc la modélisation de l'output dans les étapes introduites avant.}
+\item[$\bullet$] the contradictory regime that follows from numerical experiment. The attack could not work for some specific choices of parameters, choices that were determined experimentally. \TN{Je trouve que c'est mal dit, ou en tout cas, cela ne fit pas bien avec les points d'avant.}
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,26 +78,26 @@ Critics of the dual attack have focused their arguments on the following points 
 \label{section : QuickReview}	%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Let us first present the dual attack in a simple case. Let $s,e$ be sampled independantly according to $\D_{\ZZ^n,s}$, $A\sim \ZZ_q^{m\times n}$ and let 
+Let us first present the dual attack in a simple case. Let $s,e$ be sampled independantly according to $\D_{\ZZ^n,s}$ \TN{Il y a un conflit de notation pour $s$ ?}, $A\sim \ZZ_q^{m\times n}$ and let 
 \[ t = As + e.\]
-Suppose one wants to recover the first coordinates $s_0\in \ZZ^k$ of $s$. By writing $A$ as a block matrix $\left(\begin{array}{c|c} A_0 & A_1 \end{array}\right)$, one gets $t= A_0 s_0 + A_1 s_1 + e$. Then
+Suppose one wants to recover the first $k$ coordinates $s_0\in \ZZ^k$ of $s$. By writing $A$ as a block matrix $\begin{pmatrix} A_0 &  A_1\end{pmatrix}$, one gets $t= A_0 s_0 + A_1 s_1 + e$. Then
 \begin{itemize}
-	\item[$\bullet$] $(A_1, t- A_0 s_0)$ is a $\LWE$ sample,
-	\item[$\bullet$] for every $s\neq s_0$, $(A_1, t- A_0 s)$ is not a $\LWE$ sample, and follows the distribution $\U(\ZZ_q^{m\times (n-k)}\times \ZZ_q^m)$.
+	\item[$\bullet$] $(A_1, t- A_0 s_0)$ is a $\LWE^{m, n-k, q}$ sample \TN{Dans la définition de $\LWE$ il faudrait fournir la distribution $\nu$ aussi ?},
+	\item[$\bullet$] whenever $s\neq s_0$, $(A_1, t- A_0 s)$ follows the uniform distribution $\U(\ZZ_q^{m\times (n-k)}\times \ZZ_q^m)$.
 \end{itemize}
 
-Suppose now we are able to sample short vectors $w_1,\ldots , w_N$ in $\LL_q(A_1)^\perp$ according to $\D = \D_{\LL_q(A_1)^\perp , s^{-1}}$, and that $N$ is big enough that $g_W$ and $f_{\D}$ are indistinguishably close. Then 
+Suppose now we are able to sample short vectors $w_1,\ldots , w_N$ in $\LL_q(A_1)^\perp$ according to $\D = \D_{\LL_q(A_1)^\perp , s^{-1}}$, and that $N$ is big enough that $g_W$ and $f_{\D}$ \TN{Pas introduit encore ?} are indistinguishably close. Then 
 \[g_W(t) \approx \rho_s(\LL_q(A_1) +t ) / \rho_s(\LL_q(A_1) ).\]
 
 We suppose that $s$ is chosen so that 
-\[\argmin_{s\in \ZZ^n}g_W \approx \argmin_{s\in \ZZ^n} f_{\D}(t - A_0 s) = s_0.\] 
-Then, as $g_W$ (as is $f_\D$) is $\LL_q(A_1)$-periodic and that $q\ZZ^n\subset \LL_q(A_1)$, $g_W$ can be seen as a function defined on the finite group $\ZZ_q^n$. One can use the Fast Fourier Transform algorithm to evaluate all values of $g_W$ and thus recover $s_0$.
+\[\argmin_{s\in \ZZ^n}g_W(s) \approx \argmin_{s\in \ZZ^n} f_{\D}(t - A_0 s) = s_0.\] 
+Then, as $g_W$ (as is $f_\D$) is $\LL_q(A_1)$-periodic and that $q\ZZ^n\subset \LL_q(A_1)$, $g_W$ can be seen as a function defined on the finite group $\ZZ_q^n$. One can use the Fast Fourier Transform algorithm to evaluate all values of $g_W$ and thus recover $s_0$. \TN{Pour être précis, tu calcules toutes les valeurs de $g_W$ pour ensuite prendre l'argmin ?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Distinguisher}  		%%%%
 \label{section : Distinguisher}	%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\TN{Harmoniser les notations pour $W, \mathcal{W}$.}
 The distinguishers in \cite{PoulyShen,DucasPulles} are built as estimators of characteristic functions, i.e. functions of the type
 \[f_\D(t) = \EE_{W\sim \D}[e^{2i\pi \langle W, t\rangle}]  \]
 where $\D$ is some distribution on the dual lattice $\LL_q(A)^{\perp}$. Notice that when $\D$ is symmetric, $f_\D$  is real-valued so that $f_\D(t) = \EE_{}[\cos(2\pi \langle W ,t\rangle)]$.\\
@@ -94,16 +105,17 @@ where $\D$ is some distribution on the dual lattice $\LL_q(A)^{\perp}$. Notice t
 The choice of $\D$, and thus of $f_\D$, is crucial to the analysis. 
 \begin{itemize}
 	\item[$\bullet$] The authors in \cite{PoulyShen} were able to prove that, with the specific choice of $\D = \D_{\LL_q(a)^\perp , s^{-1}}$, the function $f_\D(t)$ is related to geometric properties of the lattice and to $\CVP$. \\
-	\item[$\bullet$] On the other end, in \cite{DucasBetter}, the author work with the choice of $\D$ being a uniform distribution on a (continuous) euclidean ball. While the computation of $f_\D$ is still possible in this case\footnote{The computation relies on classical harmonic decomposition of radial functions.}, to our knowledge, no justification as to why $f_\D$ and $\CVP$ are related exists in the litterature. We provide such an argument in section \ref{section : Sieve}. \\
+	\item[$\bullet$] On the other end, in \cite{DucasBetter}, the authors work with the choice of $\D$ being a uniform distribution on a (continuous) euclidean ball. While the computation of $f_\D$ is still possible in this case\footnote{The computation relies on classical harmonic decomposition of radial functions.}, to our knowledge, no justification as to why $f_\D$ and $\CVP$ are related exists in the literature. We provide such an argument in section \ref{section : Sieve}. \\
 \end{itemize}
-We reserve a detailed discussion about the choice of $\D$ for section \ref{section : Sieve}. \\
+We reserve a detailed discussion about the choice of $\D$ in section \ref{section : Sieve}. \\
 
-If we sample vectors $W=\{w_1,\ldots , w_N\}\subset \LL_q(A)^\perp$ according to $\D$, a natural estimator of $f_\D(t)$ is given by the empirical mean
-\[g_W(t) = \frac{1}{N}\sum_{i=1}^N \cos(2\pi \langle w_i , t\rangle.)\]
+If we sample vectors $\mathcal{W}=\{w_1,\ldots , w_N\}\subset \LL_q(A)^\perp$ according to $\D$, a natural estimator of $f_\D(t)$ is given by the empirical mean
+\[g_W(t) = \frac{1}{N}\sum_{i=1}^N \cos(2\pi \langle w_i , t\rangle)\]
 
-The following lemma ensures that $g_W$ satisfies a gaussian-type concentration inequality around $f_\D$.
+The following \TN{Référencer plus clairement le lemme, car il ne vient pas juste après.} lemma ensures that $g_W$ satisfies a gaussian-type concentration inequality around $f_\D$.
 
-\subsection{Reduction of $\cLWE$ to $\dLWE$}
+\subsection{Reduction of $\sLWE$ to $\dLWE$}
+\TN{Work in progress j'imagine ?}
 
 Let $t= As +e\in \ZZ_q^{m}$. If we decompose $A$ as $\begin{pmatrix} A_0 &  A_1\end{pmatrix}$, we can write 
 \[ t = A_0 s_0 + A_1 s_1 +e.\]
@@ -121,7 +133,7 @@ Formal justification of $f_{\D_{\LL ,s}}(t) - \rho_s(d(t,\LL)) \approx 0$ : if $
 \label{section : Sieve}		%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The distribution of vectors in $W$ also influence the validity of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
+The distribution of vectors in $\mathcal{W}$ also influence the validity \TN{efficiency ?} of the distinguisher. Indeed, the analysis carried in \cite{pouly2023provable} relies on the assumption that the element of $W$ are sampled independantly from $D_{\Lambda^\vee ,s^{-1}}$. In that case, the distinguisher can be determined via an application of the Poisson summation formula. We have that 
 \[f_\D(t) = \mathbb E[g_W(t)|t ] = \frac{\rho_s(\Lambda + t)}{\rho_s(\Lambda)}.\] 
 Using inequalities from the ,\\
 
