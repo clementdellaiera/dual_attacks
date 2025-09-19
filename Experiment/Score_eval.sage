@@ -1,5 +1,11 @@
+####################
+##   Librairies   ##
+####################
+
 import numpy as np
 from sage.stats.distributions.discrete_gaussian_integer import DiscreteGaussianDistributionIntegerSampler #, DiscreteGaussianDistributionLatticeSampler
+from FFT_gemini import *        
+from time import time
 
 ###################
 ##   Functions   ##
@@ -38,17 +44,7 @@ def initialize_table( s_test_enum , short_vector_list , target , A_fft , A_enum 
             TABLE[index] =  exp_mod(x_j.transpose() * target - y_j_enum.transpose() * s_test_enum , q)
         return(TABLE)
 
-#############
-##   FFT   ##
-#############
-
-def addition_tuple(v1, v2, modulus):
-    """
-    Addition de deux vecteurs (tuples) modulo q.
-    """
-    resultat = tuple((x + y) % modulus for x, y in zip(v1, v2))
-    return(resultat)
-
+'''
 def BitReverse( n_int , bitlen ) : 
     # input  : int n in [0,..,pow(2,bitlen)-1]
     # output : int in [0,..,pow(2,bitlen)-1] such that binary expansion is reversed of binary expansion of n
@@ -60,54 +56,7 @@ def BitReverse( n_int , bitlen ) :
         bin_rep = bin_rep[:bitlen]
     bit_rev = bin_rep[::-1]
     return(int(bit_rev , 2))
-
-
-
-# ML-DSA
 '''
-q = pow(2,23) - pow(2,13) + 1   # Solinas prime
-rank = 256 
-
-z0 = power_mod(1753 , 2 * BitReverse(randint(0,rank // 2)) + 1 , q)                        # 512-th root of unity in Zmod(q)
-zeta = { i : power_mod(z0,BitReverse(i), q) for i in range(1, rank)}
-
-print('q , rank , root of unity : ', q , ' | ' , rank, ' | ' , z0 ) 
-'''
-# def FFT(T , index ,modulo ):
-
-def FFT(T , modulo):
-    assert len(T) == rank , "input of FFT : wrong size in FFT.sage/FFT"
-    W = T.copy()
-    m , L = 0 , modulo // 2
-    while L > 0 :
-        start = 0 
-        while start < rank : 
-            m += 1
-            z = zeta[m] # power_mod( z0 , BitReverse(m) , q ) #   
-            for j in range(start , start + L ):
-                t = z * W[ (j + L) % rank ] % q
-                W[ (j + L) % rank] , W[ j % rank ] = (W[j % rank] - t ) % q , (W[j % rank] + t ) % q
-            start += 2* L        
-        L = floor(L / 2)
-    return(W)
-
-def FFT_inverse(W):
-    assert len(W) == rank , "input of NTT_inverse : wrong size in NTT.sage/NTT"
-    T = W.copy()
-    m , L = 256 , 1
-    while L < 256 :
-        start = 0
-        while start < 256 :
-            m -= 1
-            z = - zeta[m]
-            for j in range(start, start + L) :
-                t = T[j % rank]
-                T[ j % rank] , T[ (j + L) % rank ] = (t + T[ (j + L) % rank ] ) % q , z * (t - T[ (j + L) % rank ] ) % q
-                # T[ (j + L) % rank ] = ( z * T[ (j + L) % rank ] )  % q
-            start += 2 * L
-        L *= 2  
-    f = 8347681             # inverse(256) mod q
-    return({ j : (f * T[j]) % q for j in range(rank)})
 
 def ScoreEval(A , q , N_short_vector , L , target , s_enum_test):
 	
@@ -116,6 +65,11 @@ def ScoreEval(A , q , N_short_vector , L , target , s_enum_test):
 	assert (k_enum + k_lat + k_fft == n)
 
 	p = pow(2,L) # modulo switching
+	
+	print('## Evaluating score')
+	print('Modulo switching : reducing ', q , ' to ' , p)
+	print('FFT')
+	print('Dimension k_fft : ', k_fft ,' | size pow(p , k_fft ) : ' , pow(p,k_fft)) 
 
 	A_enum , A_lat , A_fft = A[ : ,  : k_enum ] , A[ : , k_enum : k_enum + k_lat] , A[ : , k_enum + k_lat : ]
 	B_lat_dual = block_matrix( [ [ identity_matrix(ZZ , m) , zero_matrix(ZZ,m,k_lat) ] , [ A_lat.lift().transpose() , q * identity_matrix(ZZ,k_lat)] ] )
@@ -152,39 +106,40 @@ def ScoreEval(A , q , N_short_vector , L , target , s_enum_test):
 ##   Experiment   ##
 ####################        
 
-sigma = 3.0
+# LWE parameters
 q = 937
 m , n = 20 , 10
-N_short_vector = 1000
+sigma = 3.0
 
+# Dual sampling and modulo switching parameter
+N_short_vector = 1000
 L = 3
 
 k_enum , k_lat , k_fft = 1 , 3 , 6
 assert (k_enum + k_lat + k_fft == n)
 
+
+print('LWE instance ')
+print(' m , n , q : ' , m , n, q )
+
+# LWE instance
 A = random_matrix(  Zmod(q) , m , n)
 secret , error = gaussian_sampler(n , sigma) , gaussian_sampler(m , sigma)
 target = A * secret + error
 
+print('Secret : ' , secret)
 
 s_enum_test = gaussian_sampler( k_enum , sigma)  
-
-        
-from FFT_gemini import *        
-
-from time import time
 start = time()
-
-# TABLE = initialize_table( s_test_enum , short_vector_list , target , A_fft , A_enum )
-
-'''
-print('LWE pair : ' , A ,' | ' , target)
-print(B_lat_dual)
-'''
-#print(TABLE)
-start = time()
-print("Test function" , ScoreEval(A , q , N_short_vector , L , target, s_enum_test))
+print("Score : " , ScoreEval(A , q , N_short_vector , L , target, s_enum_test))
 print("Execution time : ", time() - start, ' s')
+
+s0 = secret[:k_enum]
+start = time()
+print("Score : " , ScoreEval(A , q , N_short_vector , L , target, s_enum_test))
+print("Execution time : ", time() - start, ' s')
+
+
 # Evaluation lazy
 # test = [ np.cos( 2*np.pi * I *target.lift().inner_product(w[:m] )/ q) for w in short_vector_list]              
 #sum(test)
